@@ -278,7 +278,7 @@ export default function AnalysisPage() {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-darkGreen mt-1">
             New Knee Radiograph Analysis
           </h1>
-          <p className="text-xs text-darkGreen-muted mt-1">
+          <p className="text-xs text-darkGreen font-medium mt-1">
             Upload an anteroposterior radiograph to compute KL grade and Grad-CAM attention heatmaps
           </p>
         </div>
@@ -298,8 +298,8 @@ export default function AnalysisPage() {
       {/* Medical research advisory notice */}
       <div className="p-3.5 rounded-xl bg-softBg border border-lightBorder flex items-start gap-3">
         <Info className="w-4 h-4 text-sageAccent shrink-0 mt-0.5" />
-        <p className="text-xs text-darkGreen-muted leading-relaxed">
-          <strong className="text-darkGreen">Academic Decision Support:</strong> This system evaluates radiograph features using deep learning for educational research. Predictions and Grad-CAM activations do not replace certified radiological examination.
+        <p className="text-xs text-darkGreen leading-relaxed font-medium">
+          <strong className="text-darkGreen font-bold">Academic Decision Support:</strong> This system evaluates radiograph features using deep learning for educational research. Predictions and Grad-CAM activations do not replace certified radiological examination.
         </p>
       </div>
 
@@ -351,11 +351,11 @@ export default function AnalysisPage() {
                       <p className="text-sm font-bold text-darkGreen">
                         Drag & Drop Knee Radiograph Here
                       </p>
-                      <p className="text-xs text-darkGreen-muted mt-1">
+                      <p className="text-xs text-darkGreen font-medium mt-1">
                         or click to browse files from your computer
                       </p>
                     </div>
-                    <div className="flex justify-center gap-2 text-[11px] text-darkGreen-muted">
+                    <div className="flex justify-center gap-2 text-xs text-darkGreen font-medium">
                       <span>Supported: PNG, JPEG, TIFF</span>
                       <span>•</span>
                       <span>Max file size: 10 MB</span>
@@ -377,7 +377,7 @@ export default function AnalysisPage() {
                       <p className="text-sm font-bold text-darkGreen truncate">
                         {file.name}
                       </p>
-                      <p className="text-xs text-darkGreen-muted">
+                      <p className="text-xs text-darkGreen font-medium">
                         {(file.size / (1024 * 1024)).toFixed(2)} MB • {file.type}
                       </p>
                     </div>
@@ -420,7 +420,7 @@ export default function AnalysisPage() {
                     <span className="text-xs font-bold text-darkGreen block">
                       Apply CLAHE Preprocessing
                     </span>
-                    <span className="text-[11px] text-darkGreen-muted block">
+                    <span className="text-xs text-darkGreen font-medium block">
                       Enhances trabecular bone & subchondral contrast
                     </span>
                   </div>
@@ -440,7 +440,7 @@ export default function AnalysisPage() {
               {/* Progress bar during analysis */}
               {isUploading && (
                 <div className="mt-4 space-y-1.5">
-                  <div className="flex justify-between text-xs text-darkGreen-muted">
+                  <div className="flex justify-between text-xs text-darkGreen font-medium">
                     <span>Running MobileNetV2 inference & Grad-CAM...</span>
                     <span>{uploadProgress}%</span>
                   </div>
@@ -462,7 +462,7 @@ export default function AnalysisPage() {
                 title="Radiograph Checklist"
                 subtitle="Ensure optimal accuracy for inference"
               />
-              <CardContent className="space-y-3 text-xs text-darkGreen-muted">
+              <CardContent className="space-y-3 text-xs text-darkGreen font-medium">
                 <div className="flex items-start gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-sageAccent shrink-0 mt-0.5" />
                   <span>Weight-bearing Anteroposterior (AP) or Posteroanterior (PA) view.</span>
@@ -478,7 +478,7 @@ export default function AnalysisPage() {
               </CardContent>
             </Card>
 
-            <Card className="p-4 bg-softBg border border-lightBorder text-xs text-darkGreen-muted space-y-2">
+            <Card className="p-4 bg-softBg border border-lightBorder text-xs text-darkGreen font-medium space-y-2">
               <span className="font-bold text-darkGreen block">KL Scale Reminder</span>
               <p>
                 <strong className="text-darkGreen">Grade 0:</strong> Normal • <strong className="text-darkGreen">Grade 1:</strong> Doubtful • <strong className="text-darkGreen">Grade 2:</strong> Mild • <strong className="text-darkGreen">Grade 3:</strong> Moderate • <strong className="text-darkGreen">Grade 4:</strong> Severe
@@ -503,8 +503,8 @@ export default function AnalysisPage() {
                   >
                     {result.predicted_grade} — {result.severity_label}
                   </Badge>
-                  <span className="text-xs text-darkGreen-muted">
-                    Analysis ID: <code className="font-mono text-darkGreen-light">{result.analysis_id.substring(0, 12)}...</code>
+                  <span className="text-xs text-darkGreen font-medium">
+                    Analysis ID: <code className="font-mono text-darkGreen font-bold">{result.analysis_id.substring(0, 12)}...</code>
                   </span>
                 </div>
 
@@ -513,28 +513,28 @@ export default function AnalysisPage() {
                   {KL_GRADE_DETAILS[result.predicted_class]?.severity}
                 </h2>
 
-                <p className="text-xs sm:text-sm text-darkGreen-muted leading-relaxed">
+                <p className="text-xs sm:text-sm text-darkGreen leading-relaxed font-medium">
                   {KL_GRADE_DETAILS[result.predicted_class]?.description}
                 </p>
 
-                <div className="flex flex-wrap gap-4 pt-2 text-xs text-darkGreen-muted">
-                  <span><strong className="text-darkGreen">Model:</strong> {result.model_name} (v{result.model_version})</span>
+                <div className="flex flex-wrap gap-4 pt-2 text-xs text-darkGreen font-medium">
+                  <span><strong className="text-darkGreen font-bold">Model:</strong> {result.model_name} (v{result.model_version})</span>
                   <span>•</span>
-                  <span><strong className="text-darkGreen">Latency:</strong> {result.inference_time_ms.toFixed(1)} ms</span>
+                  <span><strong className="text-darkGreen font-bold">Latency:</strong> {result.inference_time_ms.toFixed(1)} ms</span>
                   <span>•</span>
-                  <span><strong className="text-darkGreen">Confidence:</strong> {(result.confidence * 100).toFixed(1)}%</span>
+                  <span><strong className="text-darkGreen font-bold">Confidence:</strong> {(result.confidence * 100).toFixed(1)}%</span>
                 </div>
               </div>
 
               <div className="md:col-span-4 text-center md:text-right border-t md:border-t-0 md:border-l border-lightBorder pt-4 md:pt-0 md:pl-6">
                 <div className="inline-block text-center p-4 rounded-xl bg-softBg border border-lightBorder">
-                  <span className="text-xs font-semibold text-darkGreen-muted block">
+                  <span className="text-xs font-bold text-darkGreen block">
                     Confidence Score
                   </span>
                   <span className="text-3xl font-black text-sageAccent block mt-1">
                     {(result.confidence * 100).toFixed(1)}%
                   </span>
-                  <span className="text-[10px] text-darkGreen-muted block mt-1">
+                  <span className="text-[10px] text-darkGreen font-semibold block mt-1">
                     Highest Softmax Logit
                   </span>
                 </div>
@@ -666,9 +666,9 @@ export default function AnalysisPage() {
                 )}
 
                 {/* Explainability Interpretation Footer */}
-                <div className="mt-4 p-3 bg-softBg rounded-lg border border-lightBorder text-xs text-darkGreen-muted leading-relaxed">
-                  <strong className="text-darkGreen block mb-0.5">What this Grad-CAM heatmap shows:</strong>
-                  The colored regions indicate areas in the convolutional feature maps that contributed positively toward the predicted <strong className="text-darkGreen">{result.predicted_grade}</strong> class. Warm zones (red/orange) represent the highest activation weights, typically corresponding to joint-space narrowing, marginal osteophytic spurs, or subchondral sclerosis.
+                <div className="mt-4 p-3 bg-softBg rounded-lg border border-lightBorder text-xs text-darkGreen leading-relaxed font-medium">
+                  <strong className="text-darkGreen font-bold block mb-0.5">What this Grad-CAM heatmap shows:</strong>
+                  The colored regions indicate areas in the convolutional feature maps that contributed positively toward the predicted <strong className="text-darkGreen font-bold">{result.predicted_grade}</strong> class. Warm zones (red/orange) represent the highest activation weights, typically corresponding to joint-space narrowing, marginal osteophytic spurs, or subchondral sclerosis.
                 </div>
               </Card>
             </div>
@@ -691,14 +691,14 @@ export default function AnalysisPage() {
                         <div className="flex items-center justify-between text-xs">
                           <span
                             className={`font-semibold ${
-                              isWinner ? "text-darkGreen font-bold" : "text-darkGreen-muted"
+                              isWinner ? "text-darkGreen font-bold" : "text-darkGreen font-medium"
                             }`}
                           >
                             {item.label} ({gradeDetail?.severity})
                           </span>
                           <span
                             className={`font-mono text-xs ${
-                              isWinner ? "text-sageAccent font-bold" : "text-darkGreen-muted"
+                              isWinner ? "text-sageAccent font-bold" : "text-darkGreen font-semibold"
                             }`}
                           >
                             {pct}%

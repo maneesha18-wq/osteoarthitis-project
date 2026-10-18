@@ -72,14 +72,14 @@ export const Sidebar: React.FC = () => {
             <span className="font-bold text-lg tracking-tight text-darkGreen leading-none">
               Knee<span className="text-sageAccent">AI</span>
             </span>
-            <span className="text-[9px] uppercase tracking-wider font-semibold text-darkGreen-muted mt-1">
+            <span className="text-[9px] uppercase tracking-wider font-bold text-darkGreen mt-1">
               Decision Support
             </span>
           </div>
         </Link>
         <button
           onClick={() => setIsMobileOpen(false)}
-          className="lg:hidden text-darkGreen-muted hover:text-darkGreen"
+          className="lg:hidden text-darkGreen hover:text-black"
         >
           <X className="w-5 h-5" />
         </button>
@@ -87,7 +87,7 @@ export const Sidebar: React.FC = () => {
 
       {/* Navigation Links */}
       <nav className="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
-        <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-darkGreen-muted mb-2">
+        <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-darkGreen mb-2">
           Clinical Navigation
         </p>
         {navItems.map((item) => {
@@ -103,11 +103,11 @@ export const Sidebar: React.FC = () => {
               onClick={() => setIsMobileOpen(false)}
               className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm transition-colors ${
                 isActive
-                  ? "bg-sageAccent text-white shadow-subtle font-medium"
-                  : "text-darkGreen-light hover:bg-lightSage/30 hover:text-darkGreen"
+                  ? "bg-sageAccent text-white shadow-subtle font-semibold"
+                  : "text-darkGreen font-semibold hover:bg-lightSage/30 hover:text-black"
               }`}
             >
-              <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-darkGreen-muted"}`} />
+              <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-darkGreen"}`} />
               <span>{item.label}</span>
             </Link>
           );
@@ -121,10 +121,10 @@ export const Sidebar: React.FC = () => {
             {user?.email?.charAt(0).toUpperCase() || "R"}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-darkGreen truncate">
+            <p className="text-xs font-bold text-darkGreen truncate">
               {user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Researcher"}
             </p>
-            <p className="text-[10px] text-darkGreen-muted truncate">
+            <p className="text-[10px] text-darkGreen/80 font-medium truncate">
               {user?.email || "Academic User"}
             </p>
           </div>

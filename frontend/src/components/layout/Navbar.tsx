@@ -29,7 +29,7 @@ export const Navbar: React.FC = () => {
               <span className="font-bold text-xl tracking-tight text-darkGreen">
                 Knee<span className="text-sageAccent">AI</span>
               </span>
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-darkGreen-muted -mt-1">
+              <span className="text-[10px] uppercase tracking-wider font-bold text-darkGreen -mt-1">
                 Deep Learning Decision Support
               </span>
             </div>
@@ -41,7 +41,7 @@ export const Navbar: React.FC = () => {
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-sm font-medium text-darkGreen-muted hover:text-darkGreen transition-colors"
+                className="text-sm font-semibold text-darkGreen hover:text-sageAccent transition-colors"
               >
                 {link.label}
               </Link>
@@ -62,7 +62,7 @@ export const Navbar: React.FC = () => {
           <div className="flex md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-lg text-darkGreen-muted hover:text-darkGreen hover:bg-lightSage/20 focus:outline-none"
+              className="p-2 rounded-lg text-darkGreen hover:bg-lightSage/20 focus:outline-none"
               aria-label="Toggle navigation menu"
             >
               {isMobileMenuOpen ? (
@@ -84,7 +84,7 @@ export const Navbar: React.FC = () => {
                 key={link.label}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="px-3 py-2 text-sm font-medium text-darkGreen-muted hover:bg-lightSage/20 hover:text-darkGreen rounded-md"
+                className="px-3 py-2 text-sm font-semibold text-darkGreen hover:bg-lightSage/20 rounded-md"
               >
                 {link.label}
               </Link>

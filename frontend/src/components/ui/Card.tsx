@@ -32,8 +32,8 @@ export const CardHeader: React.FC<{
 }> = ({ title, subtitle, action, className = "" }) => (
   <div className={`p-5 pb-3 border-b border-lightBorder flex items-start justify-between ${className}`}>
     <div>
-      <h3 className="text-base font-semibold text-darkGreen">{title}</h3>
-      {subtitle && <p className="text-xs text-darkGreen-muted mt-0.5">{subtitle}</p>}
+      <h3 className="text-base font-bold text-darkGreen">{title}</h3>
+      {subtitle && <p className="text-xs text-darkGreen font-medium mt-0.5">{subtitle}</p>}
     </div>
     {action && <div>{action}</div>}
   </div>

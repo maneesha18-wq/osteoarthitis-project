@@ -60,7 +60,7 @@ export default function HistoryPage() {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-darkGreen mt-1">
             Analysis History
           </h1>
-          <p className="text-xs text-darkGreen-muted mt-1">
+          <p className="text-xs text-darkGreen font-medium mt-1">
             Search, filter, and inspect past radiograph evaluations belonging to your account
           </p>
         </div>
@@ -73,22 +73,22 @@ export default function HistoryPage() {
       <Card className="p-4 bg-white border border-lightBorder shadow-subtle">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-darkGreen-muted" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-darkGreen" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by ID or image name..."
-              className="w-full pl-9 pr-3 py-2 text-xs border border-lightBorder rounded-lg focus:ring-sageAccent focus:border-sageAccent text-darkGreen bg-white placeholder-darkGreen-muted/60"
+              className="w-full pl-9 pr-3 py-2 text-xs border border-lightBorder rounded-lg focus:ring-sageAccent focus:border-sageAccent text-darkGreen bg-white placeholder-darkGreen/50 font-medium"
             />
           </div>
 
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-darkGreen-muted" />
+            <Filter className="w-4 h-4 text-darkGreen" />
             <select
               value={selectedGrade}
               onChange={(e) => setSelectedGrade(e.target.value)}
-              className="w-full py-2 px-3 text-xs border border-lightBorder rounded-lg focus:ring-sageAccent focus:border-sageAccent text-darkGreen bg-white"
+              className="w-full py-2 px-3 text-xs border border-lightBorder rounded-lg focus:ring-sageAccent focus:border-sageAccent text-darkGreen bg-white font-medium"
             >
               <option value="all">All Grades (0 to 4)</option>
               <option value="0">Grade 0 (None / Normal)</option>
@@ -99,9 +99,9 @@ export default function HistoryPage() {
             </select>
           </div>
 
-          <div className="flex items-center justify-between sm:justify-end px-2 text-xs text-darkGreen-muted">
+          <div className="flex items-center justify-between sm:justify-end px-2 text-xs text-darkGreen font-medium">
             <span>
-              Showing <strong>{filteredAnalyses.length}</strong> of <strong>{analyses.length}</strong> cases
+              Showing <strong className="font-bold">{filteredAnalyses.length}</strong> of <strong className="font-bold">{analyses.length}</strong> cases
             </span>
           </div>
         </div>
@@ -111,7 +111,7 @@ export default function HistoryPage() {
       <Card className="bg-white border-lightBorder shadow-subtle">
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="p-12 text-center text-xs text-darkGreen-muted">
+            <div className="p-12 text-center text-xs text-darkGreen font-medium">
               Loading past analyses...
             </div>
           ) : filteredAnalyses.length === 0 ? (
@@ -124,7 +124,7 @@ export default function HistoryPage() {
                   ? "No Historical Records Found"
                   : "No Cases Match Selected Filters"}
               </h4>
-              <p className="text-xs text-darkGreen-muted max-w-sm mx-auto mt-1 mb-4">
+              <p className="text-xs text-darkGreen font-medium max-w-sm mx-auto mt-1 mb-4">
                 {analyses.length === 0
                   ? "Analyses submitted through the platform are saved here with their timestamps, confidence scores, and Grad-CAM records."
                   : "Try resetting your search query or grade filter to view other evaluated cases."}
@@ -149,7 +149,7 @@ export default function HistoryPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-softBg text-darkGreen-muted font-bold border-b border-lightBorder uppercase tracking-wider text-[10px]">
+                <thead className="bg-softBg text-darkGreen font-bold border-b border-lightBorder uppercase tracking-wider text-[10px]">
                   <tr>
                     <th className="px-6 py-3.5">Analysis ID / File</th>
                     <th className="px-6 py-3.5">Predicted KL Grade</th>
@@ -166,10 +166,10 @@ export default function HistoryPage() {
                       className="hover:bg-lightSage/20 transition-colors"
                     >
                       <td className="px-6 py-4">
-                        <div className="font-semibold text-darkGreen truncate max-w-xs">
+                        <div className="font-bold text-darkGreen truncate max-w-xs">
                           {record.filename}
                         </div>
-                        <div className="text-[11px] font-mono text-darkGreen-muted">
+                        <div className="text-[11px] font-mono text-darkGreen font-medium">
                           {record.id.substring(0, 16)}...
                         </div>
                       </td>
@@ -183,10 +183,10 @@ export default function HistoryPage() {
                           {(record.confidence * 100).toFixed(1)}%
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-darkGreen-muted">
+                      <td className="px-6 py-4 text-darkGreen font-medium">
                         {record.model_name} (v{record.model_version})
                       </td>
-                      <td className="px-6 py-4 text-darkGreen-muted">
+                      <td className="px-6 py-4 text-darkGreen font-medium">
                         {new Date(record.created_at).toLocaleDateString()} at{" "}
                         {new Date(record.created_at).toLocaleTimeString([], {
                           hour: "2-digit",

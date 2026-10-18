@@ -24,7 +24,7 @@ export default function SettingsPage() {
         <h1 className="text-2xl sm:text-3xl font-extrabold text-darkGreen">
           Application Settings
         </h1>
-        <p className="text-xs text-darkGreen-muted mt-1">
+        <p className="text-xs text-darkGreen font-medium mt-1">
           Configure inference endpoints, image preprocessing preferences, and system thresholds
         </p>
       </div>
@@ -36,7 +36,7 @@ export default function SettingsPage() {
         />
         <CardContent>
           {isSaved && (
-            <div className="mb-4 p-3 rounded-lg bg-lightSage/40 border border-lightBorder text-xs text-darkGreen flex items-center gap-2">
+            <div className="mb-4 p-3 rounded-lg bg-lightSage/40 border border-lightBorder text-xs text-darkGreen font-semibold flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-sageAccent" />
               <span>Settings updated successfully.</span>
             </div>
@@ -44,17 +44,17 @@ export default function SettingsPage() {
 
           <form onSubmit={handleSave} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-darkGreen mb-1">
+              <label className="block text-xs font-bold text-darkGreen mb-1">
                 FastAPI Backend Endpoint
               </label>
               <input
                 type="text"
                 value={apiEndpoint}
                 onChange={(e) => setApiEndpoint(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-lightBorder rounded-lg focus:ring-sageAccent focus:border-sageAccent text-darkGreen bg-white"
+                className="w-full px-3 py-2 text-xs border border-lightBorder rounded-lg focus:ring-sageAccent focus:border-sageAccent text-darkGreen bg-white font-medium"
               />
-              <p className="text-[11px] text-darkGreen-muted mt-1">
-                Default local endpoint: <code className="font-mono text-darkGreen-light">http://localhost:8000</code>
+              <p className="text-[11px] text-darkGreen font-medium mt-1">
+                Default local endpoint: <code className="font-mono text-darkGreen font-bold">http://localhost:8000</code>
               </p>
             </div>
 
@@ -70,7 +70,7 @@ export default function SettingsPage() {
                   <span className="text-xs font-bold text-darkGreen block">
                     Enable CLAHE (Contrast Limited Adaptive Histogram Equalization)
                   </span>
-                  <span className="text-[11px] text-darkGreen-muted block">
+                  <span className="text-[11px] text-darkGreen font-medium block">
                     Applies adaptive local contrast enhancement prior to model inference to boost trabecular bone visibility.
                   </span>
                 </div>

@@ -18,9 +18,9 @@ const config: Config = {
           light: "#EBF2EB",
         },
         darkGreen: {
-          DEFAULT: "#294536",
-          light: "#3E614D",
-          muted: "#688273",
+          DEFAULT: "#111914",
+          light: "#1F2E24",
+          muted: "#2F4235",
         },
         lightBorder: "#E1E9DF",
 
@@ -33,9 +33,9 @@ const config: Config = {
           light: "#EBF2EB",
         },
         darkBrown: {
-          DEFAULT: "#294536",
-          light: "#3E614D",
-          muted: "#688273",
+          DEFAULT: "#111914",
+          light: "#1F2E24",
+          muted: "#2F4235",
         },
 
         // Palette Aliases for Consistent System Theming
@@ -47,10 +47,10 @@ const config: Config = {
           border: "#E1E9DF",
         },
         navy: {
-          900: "#294536",
-          800: "#294536",
-          700: "#3E614D",
-          600: "#4D735D",
+          900: "#111914",
+          800: "#111914",
+          700: "#1F2E24",
+          600: "#2F4235",
           100: "#D5E5D5",
           50: "#F5F8F4",
         },

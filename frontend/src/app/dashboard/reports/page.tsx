@@ -125,7 +125,7 @@ export default function ReportsPage() {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-darkGreen mt-1">
             Clinical & Research Reports
           </h1>
-          <p className="text-xs text-darkGreen-muted mt-1">
+          <p className="text-xs text-darkGreen font-medium mt-1">
             Download timestamped PDF evaluation dossiers with 5-class distributions and metadata
           </p>
         </div>
@@ -137,7 +137,7 @@ export default function ReportsPage() {
       <Card className="bg-white border-lightBorder shadow-subtle">
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="p-12 text-center text-xs text-darkGreen-muted">
+            <div className="p-12 text-center text-xs text-darkGreen font-semibold">
               Loading available reports...
             </div>
           ) : analyses.length === 0 ? (
@@ -148,7 +148,7 @@ export default function ReportsPage() {
               <h4 className="text-sm font-bold text-darkGreen">
                 No Reports Generated Yet
               </h4>
-              <p className="text-xs text-darkGreen-muted max-w-sm mx-auto mt-1 mb-4">
+              <p className="text-xs text-darkGreen font-medium max-w-sm mx-auto mt-1 mb-4">
                 When an X-ray is analyzed on the New Analysis page, you can generate and download a comprehensive clinical PDF summary report.
               </p>
               <Button variant="outline" size="sm" href="/dashboard/analysis">
@@ -171,8 +171,8 @@ export default function ReportsPage() {
                         {record.predicted_grade_label} ({record.severity_label})
                       </Badge>
                     </div>
-                    <div className="flex flex-wrap gap-3 text-xs text-darkGreen-muted">
-                      <span>ID: <code className="font-mono text-darkGreen-light">{record.id.substring(0, 8)}...</code></span>
+                    <div className="flex flex-wrap gap-3 text-xs text-darkGreen font-semibold">
+                      <span>ID: <code className="font-mono text-darkGreen font-bold">{record.id.substring(0, 8)}...</code></span>
                       <span>•</span>
                       <span>Confidence: {(record.confidence * 100).toFixed(1)}%</span>
                       <span>•</span>

@@ -101,7 +101,7 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-bold text-darkGreen">
             Welcome back, {displayName}
           </h1>
-          <p className="text-xs text-darkGreen-muted mt-0.5">
+          <p className="text-xs text-darkGreen font-medium mt-0.5">
             Knee Osteoarthritis Classification & Grad-CAM Decision Support
           </p>
         </div>
@@ -120,7 +120,7 @@ export default function DashboardPage() {
               <Activity className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-medium text-darkGreen-muted">Inference Engine</p>
+              <p className="text-xs font-semibold text-darkGreen">Inference Engine</p>
               <p className="text-sm font-bold text-darkGreen">
                 {backendStatus.modelName} (v{backendStatus.modelVersion})
               </p>
@@ -143,7 +143,7 @@ export default function DashboardPage() {
             <FileText className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-xs font-medium text-darkGreen-muted">Total Evaluations</p>
+            <p className="text-xs font-semibold text-darkGreen">Total Evaluations</p>
             <p className="text-sm font-bold text-darkGreen">
               {loading ? "..." : `${analyses.length} Records`}
             </p>
@@ -156,7 +156,7 @@ export default function DashboardPage() {
             <CheckCircle2 className="w-5 h-5" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-medium text-darkGreen-muted">Latest Result</p>
+            <p className="text-xs font-semibold text-darkGreen">Latest Result</p>
             <p className="text-sm font-bold text-darkGreen truncate">
               {latestAnalysis ? latestAnalysis.predicted_grade_label : "None Yet"}
             </p>
@@ -170,7 +170,7 @@ export default function DashboardPage() {
           <h2 className="text-lg font-bold text-darkGreen">
             Analyze Knee Radiograph
           </h2>
-          <p className="text-xs text-darkGreen-muted">
+          <p className="text-xs text-darkGreen font-medium">
             Upload a frontal knee X-ray to predict Kellgren–Lawrence severity and generate Grad-CAM heatmaps.
           </p>
         </div>
@@ -195,7 +195,7 @@ export default function DashboardPage() {
           action={
             <Link
               href="/dashboard/history"
-              className="text-xs font-semibold text-sageAccent hover:text-sageAccent-hover flex items-center gap-1"
+              className="text-xs font-bold text-sageAccent hover:underline flex items-center gap-1"
             >
               View All <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -203,7 +203,7 @@ export default function DashboardPage() {
         />
         <CardContent>
           {loading ? (
-            <div className="text-center py-8 text-xs text-darkGreen-muted">
+            <div className="text-center py-8 text-xs text-darkGreen font-medium">
               Loading recent evaluations...
             </div>
           ) : analyses.length === 0 ? (
@@ -211,8 +211,8 @@ export default function DashboardPage() {
               <div className="w-10 h-10 rounded-full bg-softBg border border-lightBorder text-sageAccent flex items-center justify-center mx-auto mb-2">
                 <Clock className="w-5 h-5" />
               </div>
-              <p className="text-xs font-semibold text-darkGreen">No analyses performed yet</p>
-              <p className="text-[11px] text-darkGreen-muted mt-1 mb-3">
+              <p className="text-xs font-bold text-darkGreen">No analyses performed yet</p>
+              <p className="text-xs text-darkGreen font-medium mt-1 mb-3">
                 Upload your first knee radiograph to view automated grading and Grad-CAM explainability.
               </p>
               <Button variant="primary" size="sm" href="/dashboard/analysis">
@@ -230,7 +230,7 @@ export default function DashboardPage() {
                     <p className="text-xs font-bold text-darkGreen truncate">
                       {rec.filename}
                     </p>
-                    <p className="text-[11px] text-darkGreen-muted mt-0.5">
+                    <p className="text-xs text-darkGreen font-medium mt-0.5">
                       {new Date(rec.created_at).toLocaleDateString()} • {(rec.confidence * 100).toFixed(1)}% confidence
                     </p>
                   </div>
@@ -240,7 +240,7 @@ export default function DashboardPage() {
                     </Badge>
                     <Link
                       href="/dashboard/history"
-                      className="text-xs text-sageAccent hover:text-sageAccent-hover font-medium"
+                      className="text-xs text-sageAccent hover:underline font-bold"
                     >
                       Details →
                     </Link>

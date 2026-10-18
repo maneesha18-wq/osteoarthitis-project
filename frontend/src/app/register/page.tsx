@@ -121,7 +121,7 @@ export default function RegisterPage() {
               Knee<span className="text-sageAccent">AI</span>
             </span>
           </div>
-          <p className="text-xs uppercase tracking-wider font-semibold text-darkGreen-muted">
+          <p className="text-xs uppercase tracking-wider font-bold text-darkGreen">
             Deep Learning Decision Support
           </p>
         </div>
@@ -130,7 +130,7 @@ export default function RegisterPage() {
         <div className="flex bg-lightSage/40 border border-lightBorder p-1 rounded-xl mb-6 shadow-inner text-xs font-semibold">
           <Link
             href="/"
-            className="flex-1 py-2 text-center rounded-lg text-darkGreen-muted hover:text-darkGreen transition"
+            className="flex-1 py-2 text-center rounded-lg text-darkGreen hover:text-black font-semibold transition"
           >
             Login
           </Link>
@@ -143,7 +143,7 @@ export default function RegisterPage() {
         <Card className="p-8 shadow-subtle border-lightBorder bg-white">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-darkGreen">Create Your Account</h2>
-            <p className="text-xs text-darkGreen-muted mt-1">
+            <p className="text-xs text-darkGreen font-medium mt-1">
               Join the explainable knee radiograph decision support platform.
             </p>
           </div>
@@ -206,7 +206,7 @@ export default function RegisterPage() {
                   Full Name & Clinical Title
                 </label>
                 <div className="relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-darkGreen-muted/70">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-darkGreen">
                     <User className="h-4 w-4" />
                   </div>
                   <input
@@ -215,7 +215,7 @@ export default function RegisterPage() {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Dr. Jordan Hayes, MD"
-                    className="block w-full pl-9 pr-3 py-2.5 text-sm border border-lightBorder rounded-lg focus:ring-2 focus:ring-sageAccent focus:border-sageAccent bg-white placeholder-darkGreen-muted/50 text-darkGreen transition"
+                    className="block w-full pl-9 pr-3 py-2.5 text-sm border border-lightBorder rounded-lg focus:ring-2 focus:ring-sageAccent focus:border-sageAccent bg-white placeholder-darkGreen/50 text-darkGreen transition font-medium"
                     required
                   />
                 </div>
@@ -230,7 +230,7 @@ export default function RegisterPage() {
                   Institutional Email Address
                 </label>
                 <div className="relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-darkGreen-muted/70">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-darkGreen">
                     <Mail className="h-4 w-4" />
                   </div>
                   <input
@@ -240,7 +240,7 @@ export default function RegisterPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@institution.edu"
-                    className="block w-full pl-9 pr-3 py-2.5 text-sm border border-lightBorder rounded-lg focus:ring-2 focus:ring-sageAccent focus:border-sageAccent bg-white placeholder-darkGreen-muted/50 text-darkGreen transition"
+                    className="block w-full pl-9 pr-3 py-2.5 text-sm border border-lightBorder rounded-lg focus:ring-2 focus:ring-sageAccent focus:border-sageAccent bg-white placeholder-darkGreen/50 text-darkGreen transition font-medium"
                     required
                   />
                 </div>
@@ -255,7 +255,7 @@ export default function RegisterPage() {
                   Password (min. 8 characters)
                 </label>
                 <div className="relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-darkGreen-muted/70">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-darkGreen">
                     <Lock className="h-4 w-4" />
                   </div>
                   <input
@@ -265,14 +265,14 @@ export default function RegisterPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="block w-full pl-9 pr-10 py-2.5 text-sm border border-lightBorder rounded-lg focus:ring-2 focus:ring-sageAccent focus:border-sageAccent bg-white placeholder-darkGreen-muted/50 text-darkGreen transition"
+                    className="block w-full pl-9 pr-10 py-2.5 text-sm border border-lightBorder rounded-lg focus:ring-2 focus:ring-sageAccent focus:border-sageAccent bg-white placeholder-darkGreen/50 text-darkGreen transition font-medium"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? "Hide password" : "Show password"}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-darkGreen-muted hover:text-darkGreen focus:outline-none"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-darkGreen hover:text-black focus:outline-none"
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -292,7 +292,7 @@ export default function RegisterPage() {
                   Confirm Password
                 </label>
                 <div className="relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-darkGreen-muted/70">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-darkGreen">
                     <Lock className="h-4 w-4" />
                   </div>
                   <input
@@ -302,7 +302,7 @@ export default function RegisterPage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="block w-full pl-9 pr-10 py-2.5 text-sm border border-lightBorder rounded-lg focus:ring-2 focus:ring-sageAccent focus:border-sageAccent bg-white placeholder-darkGreen-muted/50 text-darkGreen transition"
+                    className="block w-full pl-9 pr-10 py-2.5 text-sm border border-lightBorder rounded-lg focus:ring-2 focus:ring-sageAccent focus:border-sageAccent bg-white placeholder-darkGreen/50 text-darkGreen transition font-medium"
                     required
                   />
                   <button
@@ -313,7 +313,7 @@ export default function RegisterPage() {
                         ? "Hide confirm password"
                         : "Show confirm password"
                     }
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-darkGreen-muted hover:text-darkGreen focus:outline-none"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-darkGreen hover:text-black focus:outline-none"
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -336,7 +336,7 @@ export default function RegisterPage() {
                 />
                 <label
                   htmlFor="terms"
-                  className="ml-2 block text-xs text-darkGreen-muted cursor-pointer select-none leading-relaxed"
+                  className="ml-2 block text-xs text-darkGreen font-semibold cursor-pointer select-none leading-relaxed"
                 >
                   I acknowledge that KneeAI is an academic decision-support research tool and predictions are not a substitute for certified medical diagnosis.
                 </label>
@@ -365,11 +365,11 @@ export default function RegisterPage() {
           )}
 
           {/* Footer Switch to Sign In */}
-          <div className="mt-6 pt-5 border-t border-lightBorder text-center text-xs text-darkGreen-muted">
+          <div className="mt-6 pt-5 border-t border-lightBorder text-center text-xs text-darkGreen font-medium">
             Already have an account?{" "}
             <Link
               href="/"
-              className="font-semibold text-sageAccent hover:text-sageAccent-hover hover:underline"
+              className="font-bold text-sageAccent hover:underline"
             >
               Sign In
             </Link>
@@ -377,7 +377,7 @@ export default function RegisterPage() {
         </Card>
 
         {/* Academic Medical Disclaimer */}
-        <p className="mt-6 text-center text-[11px] text-darkGreen-muted max-w-sm mx-auto leading-relaxed">
+        <p className="mt-6 text-center text-xs text-darkGreen font-medium max-w-sm mx-auto leading-relaxed">
           KneeAI Academic Decision Support Platform • Experimental Deep Learning Research Use Only
         </p>
       </div>

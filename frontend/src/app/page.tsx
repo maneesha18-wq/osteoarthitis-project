@@ -88,7 +88,7 @@ export default function InitialAuthPage() {
               Knee<span className="text-sageAccent">AI</span>
             </span>
           </div>
-          <p className="text-xs uppercase tracking-wider font-semibold text-darkGreen-muted">
+          <p className="text-xs uppercase tracking-wider font-bold text-darkGreen">
             Deep Learning Decision Support
           </p>
         </div>
@@ -100,7 +100,7 @@ export default function InitialAuthPage() {
           </div>
           <Link
             href="/register"
-            className="flex-1 py-2 text-center rounded-lg text-darkGreen-muted hover:text-darkGreen transition"
+            className="flex-1 py-2 text-center rounded-lg text-darkGreen hover:text-black font-semibold transition"
           >
             Create Account
           </Link>
@@ -110,7 +110,7 @@ export default function InitialAuthPage() {
         <Card className="p-8 shadow-subtle border-lightBorder bg-white">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-darkGreen">Welcome Back</h2>
-            <p className="text-xs text-darkGreen-muted mt-1">
+            <p className="text-xs text-darkGreen font-medium mt-1">
               Sign in to continue to your account.
             </p>
           </div>
@@ -154,7 +154,7 @@ export default function InitialAuthPage() {
                 Email Address
               </label>
               <div className="relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-darkGreen-muted/70">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-darkGreen">
                   <Mail className="h-4 w-4" />
                 </div>
                 <input
@@ -164,7 +164,7 @@ export default function InitialAuthPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@institution.edu"
-                  className="block w-full pl-9 pr-3 py-2.5 text-sm border border-lightBorder rounded-lg focus:ring-2 focus:ring-sageAccent focus:border-sageAccent bg-white placeholder-darkGreen-muted/50 text-darkGreen transition"
+                  className="block w-full pl-9 pr-3 py-2.5 text-sm border border-lightBorder rounded-lg focus:ring-2 focus:ring-sageAccent focus:border-sageAccent bg-white placeholder-darkGreen/50 text-darkGreen transition font-medium"
                   required
                 />
               </div>
@@ -180,13 +180,13 @@ export default function InitialAuthPage() {
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="text-xs font-medium text-sageAccent hover:text-sageAccent-hover hover:underline transition"
+                  className="text-xs font-semibold text-sageAccent hover:underline transition"
                 >
                   Forgot password?
                 </Link>
               </div>
               <div className="relative rounded-md shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-darkGreen-muted/70">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-darkGreen">
                   <Lock className="h-4 w-4" />
                 </div>
                 <input
@@ -196,14 +196,14 @@ export default function InitialAuthPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="block w-full pl-9 pr-10 py-2.5 text-sm border border-lightBorder rounded-lg focus:ring-2 focus:ring-sageAccent focus:border-sageAccent bg-white placeholder-darkGreen-muted/50 text-darkGreen transition"
+                  className="block w-full pl-9 pr-10 py-2.5 text-sm border border-lightBorder rounded-lg focus:ring-2 focus:ring-sageAccent focus:border-sageAccent bg-white placeholder-darkGreen/50 text-darkGreen transition font-medium"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-darkGreen-muted hover:text-darkGreen focus:outline-none"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-darkGreen hover:text-black focus:outline-none"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -225,7 +225,7 @@ export default function InitialAuthPage() {
               />
               <label
                 htmlFor="remember-me"
-                className="ml-2 block text-xs text-darkGreen-muted cursor-pointer select-none"
+                className="ml-2 block text-xs text-darkGreen font-semibold cursor-pointer select-none"
               >
                 Remember me
               </label>
@@ -252,12 +252,12 @@ export default function InitialAuthPage() {
             </Button>
           </form>
 
-          {/* Footer Switch to Register */}
-          <div className="mt-6 pt-5 border-t border-lightBorder text-center text-xs text-darkGreen-muted">
+          {/* Footer Switch to Sign Up */}
+          <div className="mt-6 pt-5 border-t border-lightBorder text-center text-xs text-darkGreen font-medium">
             Don&apos;t have an account?{" "}
             <Link
               href="/register"
-              className="font-semibold text-sageAccent hover:text-sageAccent-hover hover:underline"
+              className="font-bold text-sageAccent hover:underline"
             >
               Create one
             </Link>
@@ -265,7 +265,7 @@ export default function InitialAuthPage() {
         </Card>
 
         {/* Academic Medical Disclaimer */}
-        <p className="mt-6 text-center text-[11px] text-darkGreen-muted max-w-sm mx-auto leading-relaxed">
+        <p className="mt-6 text-center text-xs text-darkGreen font-medium max-w-sm mx-auto leading-relaxed">
           KneeAI Academic Decision Support Platform • Experimental Deep Learning Research Use Only
         </p>
       </div>

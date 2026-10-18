@@ -71,7 +71,7 @@ export default function ForgotPasswordPage() {
               Knee<span className="text-sageAccent">AI</span>
             </span>
           </div>
-          <p className="text-xs uppercase tracking-wider font-semibold text-darkGreen-muted">
+          <p className="text-xs uppercase tracking-wider font-bold text-darkGreen">
             Deep Learning Decision Support
           </p>
         </div>
@@ -80,7 +80,7 @@ export default function ForgotPasswordPage() {
         <Card className="p-8 shadow-subtle border-lightBorder bg-white">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-darkGreen">Reset Your Password</h2>
-            <p className="text-xs text-darkGreen-muted mt-1 leading-relaxed">
+            <p className="text-xs text-darkGreen font-medium mt-1 leading-relaxed">
               Enter your institutional email address to receive password recovery instructions.
             </p>
           </div>
@@ -111,7 +111,7 @@ export default function ForgotPasswordPage() {
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <h3 className="text-base font-bold text-darkGreen">Check Your Inbox</h3>
-              <p className="text-xs text-darkGreen-muted leading-relaxed">
+              <p className="text-xs text-darkGreen font-medium leading-relaxed">
                 A password reset link has been dispatched to <strong>{email}</strong>. Please check your email to create a new password.
               </p>
               <div className="pt-3">
@@ -137,7 +137,7 @@ export default function ForgotPasswordPage() {
                   Email Address
                 </label>
                 <div className="relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-darkGreen-muted/70">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-darkGreen">
                     <Mail className="h-4 w-4" />
                   </div>
                   <input
@@ -146,7 +146,7 @@ export default function ForgotPasswordPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@institution.edu"
-                    className="block w-full pl-9 pr-3 py-2.5 text-sm border border-lightBorder rounded-lg focus:ring-2 focus:ring-sageAccent focus:border-sageAccent bg-white placeholder-darkGreen-muted/50 text-darkGreen transition"
+                    className="block w-full pl-9 pr-3 py-2.5 text-sm border border-lightBorder rounded-lg focus:ring-2 focus:ring-sageAccent focus:border-sageAccent bg-white placeholder-darkGreen/50 text-darkGreen transition font-medium"
                     required
                   />
                 </div>
@@ -172,7 +172,7 @@ export default function ForgotPasswordPage() {
               <div className="pt-2 text-center">
                 <Link
                   href="/"
-                  className="inline-flex items-center text-xs text-darkGreen-muted hover:text-darkGreen font-medium transition"
+                  className="inline-flex items-center text-xs text-darkGreen hover:text-black font-semibold transition"
                 >
                   <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Return to Login
                 </Link>
@@ -181,7 +181,7 @@ export default function ForgotPasswordPage() {
           )}
         </Card>
 
-        <p className="mt-6 text-center text-[11px] text-darkGreen-muted max-w-sm mx-auto leading-relaxed">
+        <p className="mt-6 text-center text-xs text-darkGreen font-medium max-w-sm mx-auto leading-relaxed">
           KneeAI Academic Decision Support Platform • Experimental Deep Learning Research Use Only
         </p>
       </div>

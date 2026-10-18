@@ -25,7 +25,7 @@ export default function ProfilePage() {
         <h1 className="text-2xl sm:text-3xl font-extrabold text-darkGreen">
           User Profile
         </h1>
-        <p className="text-xs text-darkGreen-muted mt-1">
+        <p className="text-xs text-darkGreen font-medium mt-1">
           Manage your researcher profile details and institution information
         </p>
       </div>
@@ -37,7 +37,7 @@ export default function ProfilePage() {
         />
         <CardContent>
           {isSaved && (
-            <div className="mb-4 p-3 rounded-lg bg-lightSage/40 border border-lightBorder text-xs text-darkGreen flex items-center gap-2">
+            <div className="mb-4 p-3 rounded-lg bg-lightSage/40 border border-lightBorder text-xs text-darkGreen font-semibold flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-sageAccent" />
               <span>Profile details saved.</span>
             </div>
@@ -45,7 +45,7 @@ export default function ProfilePage() {
 
           <form onSubmit={handleSave} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-darkGreen mb-1">
+              <label className="block text-xs font-bold text-darkGreen mb-1">
                 Display Name / Researcher Name
               </label>
               <input
@@ -53,21 +53,21 @@ export default function ProfilePage() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Dr. Alex Rivera"
-                className="w-full px-3 py-2 text-xs border border-lightBorder rounded-lg focus:ring-sageAccent focus:border-sageAccent text-darkGreen bg-white placeholder-darkGreen-muted/50"
+                className="w-full px-3 py-2 text-xs border border-lightBorder rounded-lg focus:ring-sageAccent focus:border-sageAccent text-darkGreen bg-white placeholder-darkGreen/50 font-medium"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-darkGreen mb-1">
+              <label className="block text-xs font-bold text-darkGreen mb-1">
                 Registered Email
               </label>
               <input
                 type="email"
                 value={user?.email || "researcher@university.edu"}
                 disabled
-                className="w-full px-3 py-2 text-xs border border-lightBorder rounded-lg bg-softBg text-darkGreen-muted cursor-not-allowed"
+                className="w-full px-3 py-2 text-xs border border-lightBorder rounded-lg bg-softBg text-darkGreen font-semibold cursor-not-allowed"
               />
-              <p className="text-[11px] text-darkGreen-muted mt-1">
+              <p className="text-[11px] text-darkGreen font-medium mt-1">
                 Email address is managed through Supabase Authentication.
               </p>
             </div>
