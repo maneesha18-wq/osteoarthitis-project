@@ -61,25 +61,25 @@ export const Sidebar: React.FC = () => {
   };
 
   const NavContent = (
-    <div className="flex flex-col h-full bg-white border-r border-lightBorder text-darkGreen w-64 select-none">
+    <div className="flex flex-col h-full bg-[#1A2E22] border-r border-[#264232] text-[#E3ECE5] w-64 select-none">
       {/* Brand Header */}
-      <div className="p-6 border-b border-lightBorder flex items-center justify-between">
+      <div className="p-6 border-b border-[#264232] flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-lg bg-softBg border border-lightBorder flex items-center justify-center text-sageAccent shadow-subtle">
+          <div className="w-9 h-9 rounded-lg bg-[#243F30] border border-[#325742] flex items-center justify-center text-[#9CC4A4] shadow-subtle">
             <Activity className="w-5 h-5 stroke-[2.5]" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-lg tracking-tight text-darkGreen leading-none">
-              Knee<span className="text-sageAccent">AI</span>
+            <span className="font-bold text-lg tracking-tight text-white leading-none">
+              Knee<span className="text-[#9CC4A4]">AI</span>
             </span>
-            <span className="text-[9px] uppercase tracking-wider font-bold text-darkGreen mt-1">
+            <span className="text-[9px] uppercase tracking-wider font-semibold text-[#A8C9B0] mt-1">
               Decision Support
             </span>
           </div>
         </Link>
         <button
           onClick={() => setIsMobileOpen(false)}
-          className="lg:hidden text-darkGreen hover:text-black"
+          className="lg:hidden text-[#A8C9B0] hover:text-white"
         >
           <X className="w-5 h-5" />
         </button>
@@ -87,7 +87,7 @@ export const Sidebar: React.FC = () => {
 
       {/* Navigation Links */}
       <nav className="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
-        <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-darkGreen mb-2">
+        <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-[#8FB998] mb-2">
           Clinical Navigation
         </p>
         {navItems.map((item) => {
@@ -104,10 +104,10 @@ export const Sidebar: React.FC = () => {
               className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm transition-colors ${
                 isActive
                   ? "bg-sageAccent text-white shadow-subtle font-semibold"
-                  : "text-darkGreen font-semibold hover:bg-lightSage/30 hover:text-black"
+                  : "text-[#E3ECE5] font-semibold hover:bg-[#254231] hover:text-white"
               }`}
             >
-              <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-darkGreen"}`} />
+              <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-[#9CC4A4]"}`} />
               <span>{item.label}</span>
             </Link>
           );
@@ -115,16 +115,16 @@ export const Sidebar: React.FC = () => {
       </nav>
 
       {/* User Info & Logout Footer */}
-      <div className="p-4 border-t border-lightBorder bg-softBg">
+      <div className="p-4 border-t border-[#264232] bg-[#14261C]">
         <div className="flex items-center gap-3 px-2 py-1 mb-3">
-          <div className="w-8 h-8 rounded-full bg-lightSage border border-lightBorder text-darkGreen flex items-center justify-center text-xs font-bold">
+          <div className="w-8 h-8 rounded-full bg-[#243F30] border border-[#325742] text-[#E3ECE5] flex items-center justify-center text-xs font-bold">
             {user?.email?.charAt(0).toUpperCase() || "R"}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold text-darkGreen truncate">
+            <p className="text-xs font-bold text-white truncate">
               {user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Researcher"}
             </p>
-            <p className="text-[10px] text-darkGreen/80 font-medium truncate">
+            <p className="text-[10px] text-[#A8C9B0] font-medium truncate">
               {user?.email || "Academic User"}
             </p>
           </div>
@@ -132,7 +132,7 @@ export const Sidebar: React.FC = () => {
 
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-rose-700 hover:bg-rose-50 hover:text-rose-800 transition-colors"
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-rose-300 hover:bg-rose-950/40 hover:text-rose-200 transition-colors"
         >
           <LogOut className="w-4 h-4" />
           <span>Sign Out</span>
@@ -144,14 +144,14 @@ export const Sidebar: React.FC = () => {
   return (
     <>
       {/* Mobile Hamburger Header */}
-      <div className="lg:hidden bg-white text-darkGreen px-4 py-3 flex items-center justify-between border-b border-lightBorder">
+      <div className="lg:hidden bg-[#1A2E22] text-white px-4 py-3 flex items-center justify-between border-b border-[#264232]">
         <Link href="/" className="flex items-center gap-2">
-          <Activity className="w-5 h-5 text-sageAccent" />
-          <span className="font-bold text-base text-darkGreen">KneeAI Portal</span>
+          <Activity className="w-5 h-5 text-[#9CC4A4]" />
+          <span className="font-bold text-base text-white">KneeAI Portal</span>
         </Link>
         <button
           onClick={() => setIsMobileOpen(true)}
-          className="p-1 rounded text-darkGreen-muted hover:text-darkGreen focus:outline-none"
+          className="p-1 rounded text-[#A8C9B0] hover:text-white focus:outline-none"
         >
           <Menu className="w-6 h-6" />
         </button>
