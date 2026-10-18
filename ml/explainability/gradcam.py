@@ -150,6 +150,12 @@ def generate_gradcam_visualizations(
     """
     heatmap = compute_gradcam_heatmap(model, input_tensor, target_class_index)
 
+    # Upscale heatmap to match original high-resolution radiograph
+    target_h, target_w = original_rgb.shape[:2]
+    if (heatmap.shape[0], heatmap.shape[1]) != (target_h, target_w):
+        heatmap = cv2.resize(heatmap, (target_w, target_h), interpolation=cv2.INTER_CUBIC)
+        heatmap = np.clip(heatmap, 0.0, 1.0)
+
     # Convert to 8-bit scale [0, 255]
     heatmap_uint8 = np.uint8(255 * heatmap)
 
@@ -157,15 +163,7 @@ def generate_gradcam_visualizations(
     heatmap_colored_bgr = cv2.applyColorMap(heatmap_uint8, colormap)
     heatmap_colored_rgb = cv2.cvtColor(heatmap_colored_bgr, cv2.COLOR_BGR2RGB)
 
-    # Ensure original image dimensions match
-    if original_rgb.shape[:2] != heatmap.shape[:2]:
-        original_resized = cv2.resize(
-            original_rgb,
-            (heatmap.shape[1], heatmap.shape[0]),
-            interpolation=cv2.INTER_AREA
-        )
-    else:
-        original_resized = original_rgb
+    original_resized = original_rgb
 
     # Weighted blending: overlay = alpha * heatmap + (1 - alpha) * original
     blended_overlay = cv2.addWeighted(

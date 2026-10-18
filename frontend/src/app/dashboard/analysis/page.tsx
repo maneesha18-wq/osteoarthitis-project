@@ -10,6 +10,10 @@ import {
   Sparkles,
   Info,
   Download,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  X,
 } from "lucide-react";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -56,6 +60,14 @@ export default function AnalysisPage() {
   const [activeImageView, setActiveImageView] = useState<
     "side-by-side" | "overlay" | "heatmap" | "original"
   >("side-by-side");
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+
+  const handleZoomIn = () =>
+    setZoomLevel((prev) => Math.min(Number((prev + 0.25).toFixed(2)), 3.5));
+  const handleZoomOut = () =>
+    setZoomLevel((prev) => Math.max(Number((prev - 0.25).toFixed(2)), 0.5));
+  const handleResetZoom = () => setZoomLevel(1);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -597,7 +609,7 @@ export default function AnalysisPage() {
             <div className="lg:col-span-7 space-y-4">
               <Card className="p-4 bg-white border border-lightBorder shadow-subtle">
                 {/* Visualizer controls */}
-                <div className="flex items-center justify-between pb-3 border-b border-lightBorder mb-3">
+                <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-lightBorder mb-3">
                   <div className="flex items-center gap-2">
                     <Eye className="w-4 h-4 text-sageAccent" />
                     <span className="text-xs font-bold text-darkGreen">
@@ -605,64 +617,109 @@ export default function AnalysisPage() {
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1 bg-lightSage/30 border border-lightBorder p-1 rounded-lg text-xs font-medium">
-                    <button
-                      onClick={() => setActiveImageView("side-by-side")}
-                      className={`px-2.5 py-1 rounded-md transition-all ${
-                        activeImageView === "side-by-side"
-                          ? "bg-white text-darkGreen shadow-subtle border border-lightBorder/60 font-semibold"
-                          : "text-darkGreen-muted hover:text-darkGreen"
-                      }`}
-                    >
-                      Side by Side
-                    </button>
-                    <button
-                      onClick={() => setActiveImageView("overlay")}
-                      className={`px-2.5 py-1 rounded-md transition-all ${
-                        activeImageView === "overlay"
-                          ? "bg-white text-darkGreen shadow-subtle border border-lightBorder/60 font-semibold"
-                          : "text-darkGreen-muted hover:text-darkGreen"
-                      }`}
-                    >
-                      Overlay
-                    </button>
-                    <button
-                      onClick={() => setActiveImageView("heatmap")}
-                      className={`px-2.5 py-1 rounded-md transition-all ${
-                        activeImageView === "heatmap"
-                          ? "bg-white text-darkGreen shadow-subtle border border-lightBorder/60 font-semibold"
-                          : "text-darkGreen-muted hover:text-darkGreen"
-                      }`}
-                    >
-                      Heatmap
-                    </button>
-                    <button
-                      onClick={() => setActiveImageView("original")}
-                      className={`px-2.5 py-1 rounded-md transition-all ${
-                        activeImageView === "original"
-                          ? "bg-white text-darkGreen shadow-subtle border border-lightBorder/60 font-semibold"
-                          : "text-darkGreen-muted hover:text-darkGreen"
-                      }`}
-                    >
-                      Original
-                    </button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* View Switcher */}
+                    <div className="flex items-center gap-1 bg-lightSage/30 border border-lightBorder p-1 rounded-lg text-xs font-medium">
+                      <button
+                        onClick={() => setActiveImageView("side-by-side")}
+                        className={`px-2 py-1 rounded-md transition-all ${
+                          activeImageView === "side-by-side"
+                            ? "bg-white text-darkGreen shadow-subtle border border-lightBorder/60 font-semibold"
+                            : "text-darkGreen-muted hover:text-darkGreen"
+                        }`}
+                      >
+                        Side by Side
+                      </button>
+                      <button
+                        onClick={() => setActiveImageView("overlay")}
+                        className={`px-2 py-1 rounded-md transition-all ${
+                          activeImageView === "overlay"
+                            ? "bg-white text-darkGreen shadow-subtle border border-lightBorder/60 font-semibold"
+                            : "text-darkGreen-muted hover:text-darkGreen"
+                        }`}
+                      >
+                        Overlay
+                      </button>
+                      <button
+                        onClick={() => setActiveImageView("heatmap")}
+                        className={`px-2 py-1 rounded-md transition-all ${
+                          activeImageView === "heatmap"
+                            ? "bg-white text-darkGreen shadow-subtle border border-lightBorder/60 font-semibold"
+                            : "text-darkGreen-muted hover:text-darkGreen"
+                        }`}
+                      >
+                        Heatmap
+                      </button>
+                      <button
+                        onClick={() => setActiveImageView("original")}
+                        className={`px-2 py-1 rounded-md transition-all ${
+                          activeImageView === "original"
+                            ? "bg-white text-darkGreen shadow-subtle border border-lightBorder/60 font-semibold"
+                            : "text-darkGreen-muted hover:text-darkGreen"
+                        }`}
+                      >
+                        Original
+                      </button>
+                    </div>
+
+                    {/* Interactive Zoom Controls */}
+                    <div className="flex items-center gap-1 bg-lightSage/30 border border-lightBorder px-2 py-1 rounded-lg text-xs">
+                      <button
+                        type="button"
+                        onClick={handleZoomOut}
+                        disabled={zoomLevel <= 0.5}
+                        className="p-1 rounded text-darkGreen hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent transition cursor-pointer"
+                        title="Zoom Out"
+                      >
+                        <ZoomOut className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleResetZoom}
+                        className="px-1.5 py-0.5 text-[11px] font-bold text-darkGreen hover:bg-white rounded transition cursor-pointer"
+                        title="Reset Zoom"
+                      >
+                        {Math.round(zoomLevel * 100)}%
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleZoomIn}
+                        disabled={zoomLevel >= 3.5}
+                        className="p-1 rounded text-darkGreen hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent transition cursor-pointer"
+                        title="Zoom In"
+                      >
+                        <ZoomIn className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsFullscreen(true)}
+                        className="p-1 ml-0.5 rounded text-darkGreen hover:bg-white border-l border-lightBorder pl-1.5 transition cursor-pointer"
+                        title="Open Fullscreen Lightbox"
+                      >
+                        <Maximize2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
 
-                {/* Display Panels */}
+                {/* Display Panels with Zoom & Pan Support */}
                 {activeImageView === "side-by-side" && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <span className="text-[11px] font-bold text-darkGreen-muted uppercase tracking-wider block">
                         Original Radiograph
                       </span>
-                      <div className="aspect-square rounded-lg overflow-hidden bg-black border border-lightBorder flex items-center justify-center">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={`data:image/png;base64,${result.original_image_base64}`}
-                          alt="Original Radiograph"
-                          className="w-full h-full object-contain"
-                        />
+                      <div className="aspect-square rounded-lg overflow-hidden bg-black/90 border border-lightBorder relative flex items-center justify-center">
+                        <div className="w-full h-full flex items-center justify-center overflow-auto p-2 cursor-grab active:cursor-grabbing">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={`data:image/png;base64,${result.original_image_base64}`}
+                            alt="Original Radiograph"
+                            className="radiograph-crisp max-w-full max-h-full object-contain select-none transition-transform duration-100 ease-out"
+                            style={{ transform: `scale(${zoomLevel})` }}
+                            draggable={false}
+                          />
+                        </div>
                       </div>
                     </div>
 
@@ -670,48 +727,64 @@ export default function AnalysisPage() {
                       <span className="text-[11px] font-bold text-sageAccent uppercase tracking-wider block">
                         Grad-CAM Attention Overlay
                       </span>
-                      <div className="aspect-square rounded-lg overflow-hidden bg-black border border-lightBorder flex items-center justify-center">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={`data:image/png;base64,${result.gradcam_overlay_base64}`}
-                          alt="Grad-CAM Overlay"
-                          className="w-full h-full object-contain"
-                        />
+                      <div className="aspect-square rounded-lg overflow-hidden bg-black/90 border border-lightBorder relative flex items-center justify-center">
+                        <div className="w-full h-full flex items-center justify-center overflow-auto p-2 cursor-grab active:cursor-grabbing">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={`data:image/png;base64,${result.gradcam_overlay_base64}`}
+                            alt="Grad-CAM Overlay"
+                            className="radiograph-crisp max-w-full max-h-full object-contain select-none transition-transform duration-100 ease-out"
+                            style={{ transform: `scale(${zoomLevel})` }}
+                            draggable={false}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
                 )}
 
                 {activeImageView === "overlay" && (
-                  <div className="max-w-md mx-auto aspect-square rounded-lg overflow-hidden bg-black border border-lightBorder flex items-center justify-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={`data:image/png;base64,${result.gradcam_overlay_base64}`}
-                      alt="Grad-CAM Overlay"
-                      className="w-full h-full object-contain"
-                    />
+                  <div className="max-w-md mx-auto aspect-square rounded-lg overflow-hidden bg-black/90 border border-lightBorder relative flex items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center overflow-auto p-2 cursor-grab active:cursor-grabbing">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`data:image/png;base64,${result.gradcam_overlay_base64}`}
+                        alt="Grad-CAM Overlay"
+                        className="radiograph-crisp max-w-full max-h-full object-contain select-none transition-transform duration-100 ease-out"
+                        style={{ transform: `scale(${zoomLevel})` }}
+                        draggable={false}
+                      />
+                    </div>
                   </div>
                 )}
 
                 {activeImageView === "heatmap" && (
-                  <div className="max-w-md mx-auto aspect-square rounded-lg overflow-hidden bg-black border border-lightBorder flex items-center justify-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={`data:image/png;base64,${result.gradcam_heatmap_base64}`}
-                      alt="Grad-CAM Heatmap"
-                      className="w-full h-full object-contain"
-                    />
+                  <div className="max-w-md mx-auto aspect-square rounded-lg overflow-hidden bg-black/90 border border-lightBorder relative flex items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center overflow-auto p-2 cursor-grab active:cursor-grabbing">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`data:image/png;base64,${result.gradcam_heatmap_base64}`}
+                        alt="Grad-CAM Heatmap"
+                        className="radiograph-crisp max-w-full max-h-full object-contain select-none transition-transform duration-100 ease-out"
+                        style={{ transform: `scale(${zoomLevel})` }}
+                        draggable={false}
+                      />
+                    </div>
                   </div>
                 )}
 
                 {activeImageView === "original" && (
-                  <div className="max-w-md mx-auto aspect-square rounded-lg overflow-hidden bg-black border border-lightBorder flex items-center justify-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={`data:image/png;base64,${result.original_image_base64}`}
-                      alt="Original Radiograph"
-                      className="w-full h-full object-contain"
-                    />
+                  <div className="max-w-md mx-auto aspect-square rounded-lg overflow-hidden bg-black/90 border border-lightBorder relative flex items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center overflow-auto p-2 cursor-grab active:cursor-grabbing">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`data:image/png;base64,${result.original_image_base64}`}
+                        alt="Original Radiograph"
+                        className="radiograph-crisp max-w-full max-h-full object-contain select-none transition-transform duration-100 ease-out"
+                        style={{ transform: `scale(${zoomLevel})` }}
+                        draggable={false}
+                      />
+                    </div>
                   </div>
                 )}
 
@@ -721,6 +794,98 @@ export default function AnalysisPage() {
                   The colored regions indicate areas in the convolutional feature maps that contributed positively toward the predicted <strong className="text-darkGreen font-bold">{result.predicted_grade}</strong> class. Warm zones (red/orange) represent the highest activation weights, typically corresponding to joint-space narrowing, marginal osteophytic spurs, or subchondral sclerosis.
                 </div>
               </Card>
+
+              {/* Fullscreen Lightbox Modal */}
+              {isFullscreen && (
+                <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col p-4 sm:p-6 animate-fadeIn">
+                  <div className="flex items-center justify-between pb-3 border-b border-white/10 text-white">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm">
+                        High-Resolution Radiograph Inspector
+                      </span>
+                      <span className="text-xs text-[#A0B9A7]">
+                        ({result.predicted_grade} — {result.severity_label})
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 bg-white/10 border border-white/20 px-2 py-1 rounded-lg text-xs">
+                        <button
+                          type="button"
+                          onClick={handleZoomOut}
+                          disabled={zoomLevel <= 0.5}
+                          className="p-1 rounded text-white hover:bg-white/20 disabled:opacity-30 transition cursor-pointer"
+                          title="Zoom Out"
+                        >
+                          <ZoomOut className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleResetZoom}
+                          className="px-2 py-0.5 text-xs font-bold text-white hover:bg-white/20 rounded transition cursor-pointer"
+                          title="Reset Zoom"
+                        >
+                          {Math.round(zoomLevel * 100)}%
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleZoomIn}
+                          disabled={zoomLevel >= 3.5}
+                          className="p-1 rounded text-white hover:bg-white/20 disabled:opacity-30 transition cursor-pointer"
+                          title="Zoom In"
+                        >
+                          <ZoomIn className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setIsFullscreen(false)}
+                        className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition cursor-pointer"
+                        title="Close Inspector"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 overflow-auto flex items-center justify-center p-4">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6 max-w-full">
+                      <div className="space-y-2 text-center">
+                        <span className="text-xs font-semibold text-white/70">
+                          Original Radiograph
+                        </span>
+                        <div className="overflow-auto max-h-[75vh] max-w-[45vw] p-2 bg-black rounded-xl border border-white/10">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={`data:image/png;base64,${result.original_image_base64}`}
+                            alt="Original Radiograph Fullscreen"
+                            className="radiograph-crisp max-h-[70vh] object-contain select-none transition-transform duration-100 ease-out"
+                            style={{ transform: `scale(${zoomLevel})` }}
+                            draggable={false}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 text-center">
+                        <span className="text-xs font-semibold text-[#82C798]">
+                          Grad-CAM Attention Overlay
+                        </span>
+                        <div className="overflow-auto max-h-[75vh] max-w-[45vw] p-2 bg-black rounded-xl border border-white/10">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={`data:image/png;base64,${result.gradcam_overlay_base64}`}
+                            alt="Grad-CAM Overlay Fullscreen"
+                            className="radiograph-crisp max-h-[70vh] object-contain select-none transition-transform duration-100 ease-out"
+                            style={{ transform: `scale(${zoomLevel})` }}
+                            draggable={false}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Right Column: 5-Class Probability Distribution Chart */}
