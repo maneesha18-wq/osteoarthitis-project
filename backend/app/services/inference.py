@@ -124,17 +124,11 @@ class ModelManager:
                 )
             )
 
-        # 5. Grad-CAM Explainability Generation with High-Resolution Radiograph
-        display_pil = pil_image.convert("RGB")
-        max_display_dim = 1024
-        if max(display_pil.size) > max_display_dim:
-            display_pil.thumbnail((max_display_dim, max_display_dim), Image.Resampling.LANCZOS)
-        highres_display_rgb = np.array(display_pil)
-
+        # 5. Grad-CAM Explainability Generation
         gradcam_results = generate_gradcam_visualizations(
             model=self.model,
             input_tensor=input_tensor,
-            original_rgb=highres_display_rgb,
+            original_rgb=original_rgb,
             target_class_index=predicted_class,
             alpha=0.45
         )

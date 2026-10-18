@@ -702,24 +702,21 @@ export default function AnalysisPage() {
                   </div>
                 </div>
 
-                {/* Display Panels with Zoom & Pan Support */}
+                {/* Display Panels */}
                 {activeImageView === "side-by-side" && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <span className="text-[11px] font-bold text-darkGreen-muted uppercase tracking-wider block">
                         Original Radiograph
                       </span>
-                      <div className="aspect-square rounded-lg overflow-hidden bg-black/90 border border-lightBorder relative flex items-center justify-center">
-                        <div className="w-full h-full flex items-center justify-center overflow-auto p-2 cursor-grab active:cursor-grabbing">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={`data:image/png;base64,${result.original_image_base64}`}
-                            alt="Original Radiograph"
-                            className="radiograph-crisp max-w-full max-h-full object-contain select-none transition-transform duration-100 ease-out"
-                            style={{ transform: `scale(${zoomLevel})` }}
-                            draggable={false}
-                          />
-                        </div>
+                      <div className="aspect-square rounded-lg overflow-hidden border border-lightBorder bg-black flex items-center justify-center">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={`data:image/png;base64,${result.original_image_base64}`}
+                          alt="Original Radiograph"
+                          className="w-full h-full object-contain transition-transform duration-150 ease-out"
+                          style={{ transform: `scale(${zoomLevel})` }}
+                        />
                       </div>
                     </div>
 
@@ -727,64 +724,52 @@ export default function AnalysisPage() {
                       <span className="text-[11px] font-bold text-sageAccent uppercase tracking-wider block">
                         Grad-CAM Attention Overlay
                       </span>
-                      <div className="aspect-square rounded-lg overflow-hidden bg-black/90 border border-lightBorder relative flex items-center justify-center">
-                        <div className="w-full h-full flex items-center justify-center overflow-auto p-2 cursor-grab active:cursor-grabbing">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={`data:image/png;base64,${result.gradcam_overlay_base64}`}
-                            alt="Grad-CAM Overlay"
-                            className="radiograph-crisp max-w-full max-h-full object-contain select-none transition-transform duration-100 ease-out"
-                            style={{ transform: `scale(${zoomLevel})` }}
-                            draggable={false}
-                          />
-                        </div>
+                      <div className="aspect-square rounded-lg overflow-hidden border border-lightBorder bg-black flex items-center justify-center">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={`data:image/png;base64,${result.gradcam_overlay_base64}`}
+                          alt="Grad-CAM Overlay"
+                          className="w-full h-full object-contain transition-transform duration-150 ease-out"
+                          style={{ transform: `scale(${zoomLevel})` }}
+                        />
                       </div>
                     </div>
                   </div>
                 )}
 
                 {activeImageView === "overlay" && (
-                  <div className="max-w-md mx-auto aspect-square rounded-lg overflow-hidden bg-black/90 border border-lightBorder relative flex items-center justify-center">
-                    <div className="w-full h-full flex items-center justify-center overflow-auto p-2 cursor-grab active:cursor-grabbing">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`data:image/png;base64,${result.gradcam_overlay_base64}`}
-                        alt="Grad-CAM Overlay"
-                        className="radiograph-crisp max-w-full max-h-full object-contain select-none transition-transform duration-100 ease-out"
-                        style={{ transform: `scale(${zoomLevel})` }}
-                        draggable={false}
-                      />
-                    </div>
+                  <div className="max-w-md mx-auto aspect-square rounded-lg overflow-hidden border border-lightBorder bg-black flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`data:image/png;base64,${result.gradcam_overlay_base64}`}
+                      alt="Grad-CAM Overlay"
+                      className="w-full h-full object-contain transition-transform duration-150 ease-out"
+                      style={{ transform: `scale(${zoomLevel})` }}
+                    />
                   </div>
                 )}
 
                 {activeImageView === "heatmap" && (
-                  <div className="max-w-md mx-auto aspect-square rounded-lg overflow-hidden bg-black/90 border border-lightBorder relative flex items-center justify-center">
-                    <div className="w-full h-full flex items-center justify-center overflow-auto p-2 cursor-grab active:cursor-grabbing">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`data:image/png;base64,${result.gradcam_heatmap_base64}`}
-                        alt="Grad-CAM Heatmap"
-                        className="radiograph-crisp max-w-full max-h-full object-contain select-none transition-transform duration-100 ease-out"
-                        style={{ transform: `scale(${zoomLevel})` }}
-                        draggable={false}
-                      />
-                    </div>
+                  <div className="max-w-md mx-auto aspect-square rounded-lg overflow-hidden border border-lightBorder bg-black flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`data:image/png;base64,${result.gradcam_heatmap_base64}`}
+                      alt="Grad-CAM Heatmap"
+                      className="w-full h-full object-contain transition-transform duration-150 ease-out"
+                      style={{ transform: `scale(${zoomLevel})` }}
+                    />
                   </div>
                 )}
 
                 {activeImageView === "original" && (
-                  <div className="max-w-md mx-auto aspect-square rounded-lg overflow-hidden bg-black/90 border border-lightBorder relative flex items-center justify-center">
-                    <div className="w-full h-full flex items-center justify-center overflow-auto p-2 cursor-grab active:cursor-grabbing">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`data:image/png;base64,${result.original_image_base64}`}
-                        alt="Original Radiograph"
-                        className="radiograph-crisp max-w-full max-h-full object-contain select-none transition-transform duration-100 ease-out"
-                        style={{ transform: `scale(${zoomLevel})` }}
-                        draggable={false}
-                      />
-                    </div>
+                  <div className="max-w-md mx-auto aspect-square rounded-lg overflow-hidden border border-lightBorder bg-black flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`data:image/png;base64,${result.original_image_base64}`}
+                      alt="Original Radiograph"
+                      className="w-full h-full object-contain transition-transform duration-150 ease-out"
+                      style={{ transform: `scale(${zoomLevel})` }}
+                    />
                   </div>
                 )}
 
