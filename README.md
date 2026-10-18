@@ -214,5 +214,4 @@ KneeAI utilizes Supabase PostgreSQL with **Row Level Security (RLS)** to enforce
 ---
 
 ## 👥 Authors & Academic Context
-Data Science Major Project Team  
-College Capstone Initiative — "Explainable Knee Osteoarthritis Grade Classification Using Deep Learning"
+Pagadala Maneesha
