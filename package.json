@@ -6,11 +6,11 @@
   "scripts": {
     "dev": "concurrently -n \"frontend,backend\" -c \"cyan,magenta\" --kill-others-on-fail \"npm run dev:frontend\" \"npm run dev:backend\"",
     "dev:frontend": "cd frontend && npm run dev",
-    "dev:backend": "cd backend && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload",
+    "dev:backend": "python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload",
     "build:frontend": "cd frontend && npm run build",
     "lint:frontend": "cd frontend && npm run lint",
-    "test:frontend": "cd frontend && npm test",
-    "test:backend": "cd backend && pytest"
+    "test:frontend": "cd frontend && npm run build",
+    "test:backend": "python backend/tests/run_tests.py"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

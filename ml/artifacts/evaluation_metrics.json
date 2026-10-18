@@ -1,0 +1,95 @@
+{
+  "overall": {
+    "accuracy": 0.3205882352941177,
+    "precision_macro": 0.23776620837989842,
+    "recall_macro": 0.2171110262286733,
+    "f1_macro": 0.20654922064965295,
+    "precision_weighted": 0.4409021589275674,
+    "recall_weighted": 0.3205882352941177,
+    "f1_weighted": 0.3599626616072556,
+    "total_samples": 340
+  },
+  "per_class": {
+    "grade_0": {
+      "label": "Grade 0 (Normal)",
+      "precision": 0.6422764227642277,
+      "recall": 0.42245989304812837,
+      "f1_score": 0.5096774193548387,
+      "support": 187
+    },
+    "grade_1": {
+      "label": "Grade 1 (Doubtful)",
+      "precision": 0.2037037037037037,
+      "recall": 0.19642857142857142,
+      "f1_score": 0.2,
+      "support": 56
+    },
+    "grade_2": {
+      "label": "Grade 2 (Mild)",
+      "precision": 0.2702702702702703,
+      "recall": 0.16666666666666666,
+      "f1_score": 0.20618556701030927,
+      "support": 60
+    },
+    "grade_3": {
+      "label": "Grade 3 (Moderate)",
+      "precision": 0.07258064516129033,
+      "recall": 0.3,
+      "f1_score": 0.11688311688311688,
+      "support": 30
+    },
+    "grade_4": {
+      "label": "Grade 4 (Severe)",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 7
+    }
+  },
+  "confusion_matrix": [
+    [
+      79,
+      22,
+      20,
+      65,
+      1
+    ],
+    [
+      19,
+      11,
+      5,
+      21,
+      0
+    ],
+    [
+      15,
+      11,
+      10,
+      23,
+      1
+    ],
+    [
+      9,
+      10,
+      2,
+      9,
+      0
+    ],
+    [
+      1,
+      0,
+      0,
+      6,
+      0
+    ]
+  ],
+  "adjacent_grade_analysis": {
+    "exact_agreement_rate": 0.3205882352941177,
+    "within_one_grade_rate": 0.5794117647058824,
+    "multi_grade_discrepancy_rate": 0.42058823529411765,
+    "g1_predicted_as_g2": 5,
+    "g2_predicted_as_g1": 11,
+    "g2_predicted_as_g3": 23,
+    "g3_predicted_as_g2": 2
+  }
+}

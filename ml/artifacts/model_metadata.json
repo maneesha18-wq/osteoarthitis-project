@@ -1,0 +1,30 @@
+{
+  "model_type": "mobilenetv2",
+  "model_version": "1.0.0",
+  "input_shape": [
+    224,
+    224,
+    3
+  ],
+  "num_classes": 5,
+  "classes": {
+    "0": "Grade 0 (Normal)",
+    "1": "Grade 1 (Doubtful)",
+    "2": "Grade 2 (Mild)",
+    "3": "Grade 3 (Moderate)",
+    "4": "Grade 4 (Severe)"
+  },
+  "preprocessing": {
+    "target_size": [
+      224,
+      224
+    ],
+    "clahe_applied": true,
+    "normalize": "mobilenetv2"
+  },
+  "dataset_source": "Kaggle Knee Osteoarthritis Dataset with Severity",
+  "total_training_samples": 1585,
+  "total_test_samples": 340,
+  "accuracy": 0.3205882352941177,
+  "macro_f1": 0.20654922064965295
+}

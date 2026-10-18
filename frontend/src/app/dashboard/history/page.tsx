@@ -1,23 +1,67 @@
 "use client";
 
-import React, { useState } from "react";
-import { History, Search, Filter, Calendar, PlusCircle } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import {
+  History,
+  Search,
+  Filter,
+  PlusCircle,
+  CheckCircle2,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Badge, getGradeBadgeVariant } from "@/components/ui/Badge";
+import { useAuth } from "@/context/AuthContext";
+import { fetchAnalyses, AnalysisRecord } from "@/lib/supabase";
 
 export default function HistoryPage() {
+  const { user } = useAuth();
+  const [analyses, setAnalyses] = useState<AnalysisRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGrade, setSelectedGrade] = useState<string>("all");
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadData() {
+      setIsLoading(true);
+      const data = await fetchAnalyses(user?.id);
+      if (isMounted) {
+        setAnalyses(data);
+        setIsLoading(false);
+      }
+    }
+    loadData();
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
+
+  // Filter logic
+  const filteredAnalyses = analyses.filter((item) => {
+    const matchesSearch =
+      searchQuery.trim() === "" ||
+      item.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.filename.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesGrade =
+      selectedGrade === "all" || item.predicted_grade.toString() === selectedGrade;
+
+    return matchesSearch && matchesGrade;
+  });
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200/80 pb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-navy-800">
+          <span className="text-xs font-semibold text-teal-600 uppercase tracking-wider">
+            Case Audit Trail
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-navy-800 mt-1">
             Analysis History
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Search, filter, and inspect past radiograph evaluations and Grad-CAM explanations
+            Search, filter, and inspect past radiograph evaluations belonging to your account
           </p>
         </div>
         <Button variant="primary" href="/dashboard/analysis">
@@ -26,15 +70,15 @@ export default function HistoryPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <Card className="p-4 bg-white">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <Card className="p-4 bg-white shadow-subtle">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by Analysis ID or filename..."
+              placeholder="Search by ID or image name..."
               className="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 text-navy-900"
             />
           </div>
@@ -55,13 +99,10 @@ export default function HistoryPage() {
             </select>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-slate-400" />
-            <select className="w-full py-2 px-3 text-xs border border-slate-200 rounded-lg focus:ring-teal-500 focus:border-teal-500 text-navy-900 bg-white">
-              <option value="all">All Time</option>
-              <option value="7d">Last 7 Days</option>
-              <option value="30d">Last 30 Days</option>
-            </select>
+          <div className="flex items-center justify-between sm:justify-end px-2 text-xs text-slate-500">
+            <span>
+              Showing <strong>{filteredAnalyses.length}</strong> of <strong>{analyses.length}</strong> cases
+            </span>
           </div>
         </div>
       </Card>
@@ -69,20 +110,100 @@ export default function HistoryPage() {
       {/* Table / Records Area */}
       <Card>
         <CardContent className="p-0">
-          <div className="text-center py-16 px-4">
-            <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
-              <History className="w-6 h-6" />
+          {isLoading ? (
+            <div className="p-12 text-center text-xs text-slate-500">
+              Loading past analyses...
             </div>
-            <h4 className="text-sm font-bold text-navy-800">
-              No Historical Records Found
-            </h4>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
-              Analyses submitted through the platform are logged with their class probabilities, timestamps, and Grad-CAM records once saved.
-            </p>
-            <Button variant="outline" size="sm" href="/dashboard/analysis">
-              Run New Analysis
-            </Button>
-          </div>
+          ) : filteredAnalyses.length === 0 ? (
+            <div className="text-center py-16 px-4">
+              <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+                <History className="w-6 h-6" />
+              </div>
+              <h4 className="text-sm font-bold text-navy-800">
+                {analyses.length === 0
+                  ? "No Historical Records Found"
+                  : "No Cases Match Selected Filters"}
+              </h4>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
+                {analyses.length === 0
+                  ? "Analyses submitted through the platform are saved here with their timestamps, confidence scores, and Grad-CAM records."
+                  : "Try resetting your search query or grade filter to view other evaluated cases."}
+              </p>
+              {analyses.length === 0 ? (
+                <Button variant="outline" size="sm" href="/dashboard/analysis">
+                  Run First Analysis
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSelectedGrade("all");
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              )}
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50/80 text-navy-800 font-bold border-b border-slate-200 uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="px-6 py-3.5">Analysis ID / File</th>
+                    <th className="px-6 py-3.5">Predicted KL Grade</th>
+                    <th className="px-6 py-3.5">Confidence</th>
+                    <th className="px-6 py-3.5">Model</th>
+                    <th className="px-6 py-3.5">Date & Time</th>
+                    <th className="px-6 py-3.5 text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredAnalyses.map((record) => (
+                    <tr
+                      key={record.id}
+                      className="hover:bg-slate-50/60 transition-colors"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="font-semibold text-navy-900 truncate max-w-xs">
+                          {record.filename}
+                        </div>
+                        <div className="text-[11px] font-mono text-slate-400">
+                          {record.id.substring(0, 16)}...
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge variant={getGradeBadgeVariant(record.predicted_grade)}>
+                          {record.predicted_grade_label} ({record.severity_label})
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-mono font-bold text-teal-700">
+                          {(record.confidence * 100).toFixed(1)}%
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-slate-600">
+                        {record.model_name} (v{record.model_version})
+                      </td>
+                      <td className="px-6 py-4 text-slate-500">
+                        {new Date(record.created_at).toLocaleDateString()} at{" "}
+                        {new Date(record.created_at).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          <CheckCircle2 className="w-3 h-3" /> Completed
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

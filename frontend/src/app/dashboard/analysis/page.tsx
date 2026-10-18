@@ -14,6 +14,8 @@ import {
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge, getGradeBadgeVariant, KL_GRADE_DETAILS } from "@/components/ui/Badge";
+import { useAuth } from "@/context/AuthContext";
+import { saveAnalysis } from "@/lib/supabase";
 import jsPDF from "jspdf";
 
 interface PredictionResponse {
@@ -43,6 +45,7 @@ interface PredictionResponse {
 }
 
 export default function AnalysisPage() {
+  const { user } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -147,6 +150,29 @@ export default function AnalysisPage() {
       const data: PredictionResponse = await response.json();
       setResult(data);
       setUploadProgress(100);
+
+      // Persist analysis record to Supabase with user RLS isolation
+      await saveAnalysis(
+        {
+          id: data.analysis_id,
+          user_id: user?.id,
+          filename: file.name,
+          file_size_bytes: file.size,
+          predicted_grade: data.predicted_class,
+          predicted_grade_label: data.predicted_grade,
+          severity_label: data.severity_label,
+          confidence: data.confidence,
+          probabilities: data.probabilities,
+          model_name: data.model_name,
+          model_version: data.model_version,
+          inference_time_ms: data.inference_time_ms,
+          clahe_applied: applyClahe,
+          has_gradcam: true,
+          notes: data.interpretation_notes,
+          created_at: data.timestamp,
+        },
+        user?.id
+      );
     } catch (err: unknown) {
       const msg =
         err instanceof Error

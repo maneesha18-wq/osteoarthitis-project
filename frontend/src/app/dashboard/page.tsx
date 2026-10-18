@@ -16,6 +16,8 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
+import { Badge, getGradeBadgeVariant } from "@/components/ui/Badge";
+import { fetchAnalyses, AnalysisRecord } from "@/lib/supabase";
 
 interface BackendStatus {
   status: "checking" | "online" | "degraded" | "offline";
@@ -99,6 +101,20 @@ export default function DashboardPage() {
       clearInterval(interval);
     };
   }, [apiUrl]);
+
+  const [recentAnalyses, setRecentAnalyses] = useState<AnalysisRecord[]>([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchAnalyses(user?.id).then((records) => {
+      if (isMounted) {
+        setRecentAnalyses(records.slice(0, 3));
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
 
   return (
     <div className="space-y-8">
@@ -251,21 +267,44 @@ export default function DashboardPage() {
               }
             />
             <CardContent>
-              {/* Honest empty state when no analysis records are stored yet */}
-              <div className="text-center py-10 px-4">
-                <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
-                  <Clock className="w-6 h-6" />
+              {recentAnalyses.length === 0 ? (
+                /* Honest empty state when no analysis records are stored yet */
+                <div className="text-center py-10 px-4">
+                  <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+                    <Clock className="w-6 h-6" />
+                  </div>
+                  <h4 className="text-sm font-bold text-navy-800">
+                    No Analyses Performed Yet
+                  </h4>
+                  <p className="text-xs text-slate-500 max-w-md mx-auto mt-1 mb-4">
+                    You have not submitted any knee radiographs for evaluation. Once an analysis is conducted, the results, confidence scores, and Grad-CAM visualizations will appear here.
+                  </p>
+                  <Button variant="outline" size="sm" href="/dashboard/analysis">
+                    <PlusCircle className="w-3.5 h-3.5 mr-1" /> Conduct First Analysis
+                  </Button>
                 </div>
-                <h4 className="text-sm font-bold text-navy-800">
-                  No Analyses Performed Yet
-                </h4>
-                <p className="text-xs text-slate-500 max-w-md mx-auto mt-1 mb-4">
-                  You have not submitted any knee radiographs for evaluation. Once an analysis is conducted, the results, confidence scores, and Grad-CAM visualizations will appear here.
-                </p>
-                <Button variant="outline" size="sm" href="/dashboard/analysis">
-                  <PlusCircle className="w-3.5 h-3.5 mr-1" /> Conduct First Analysis
-                </Button>
-              </div>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {recentAnalyses.map((rec) => (
+                    <div
+                      key={rec.id}
+                      className="py-3 flex items-center justify-between gap-3"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-navy-800 truncate">
+                          {rec.filename}
+                        </p>
+                        <p className="text-[11px] text-slate-400">
+                          {new Date(rec.created_at).toLocaleDateString()} • {(rec.confidence * 100).toFixed(1)}% confidence
+                        </p>
+                      </div>
+                      <Badge variant={getGradeBadgeVariant(rec.predicted_grade)} size="sm">
+                        {rec.predicted_grade_label}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
