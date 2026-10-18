@@ -134,7 +134,8 @@ export default function AnalysisPage() {
     setIsUploading(true);
     setUploadProgress(25);
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const apiUrl = rawApiUrl.replace(/\/+$/, "");
     const formData = new FormData();
     formData.append("file", file);
     formData.append("clahe", applyClahe ? "true" : "false");
