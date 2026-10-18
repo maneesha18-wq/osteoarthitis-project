@@ -13,12 +13,12 @@
 | **Phase 1** | Inspect & Initialize Monorepo | COMPLETED | Monorepo structure, Git setup, `.gitignore`, `.env.example`, runner | 5496634 |
 | **Phase 2** | UI Foundation & Landing Page | COMPLETED | Tailwind color palette, medical design system, landing page, build verified | 94e9c0e |
 | **Phase 3** | Authentication & Dashboard | COMPLETED | Supabase Auth, login/register/reset, protected routes, dashboard | 18721f7 |
-| **Phase 4** | Dataset & ML Pipeline | COMPLETED | Dataset inspection (2,264 images), MobileNetV2, Grad-CAM, metrics | Pending Commit |
-| **Phase 5** | AI API (FastAPI) | COMPLETED | `/health`, `/ready`, `/predict`, schema validation, 5/5 tests passing | Pending Commit |
-| **Phase 6** | Analysis UI & Explainability | COMPLETED | Drag-and-drop upload, real-time prediction, Grad-CAM view, PDF export | Pending Commit |
+| **Phase 4** | Dataset & ML Pipeline | COMPLETED | Dataset inspection (2,264 images), MobileNetV2, Grad-CAM, metrics | 8b249f5 |
+| **Phase 5** | AI API (FastAPI) | COMPLETED | `/health`, `/ready`, `/predict`, schema validation, 5/5 tests passing | 8b249f5 |
+| **Phase 6** | Analysis UI & Explainability | COMPLETED | Drag-and-drop upload, real-time prediction, Grad-CAM view, PDF export | 8b249f5 |
 | **Phase 7** | Database, History & Reports | COMPLETED | Supabase RLS schema, user history filtering, on-demand PDF dossiers | 8b249f5 |
 | **Phase 8** | Quality Assurance & Testing | COMPLETED | Full Next.js production build, automated backend unittest suite (5/5) | 8b249f5 |
-| **Phase 9** | Documentation & Handover | COMPLETED | Comprehensive README, API docs, reproduction instructions | Pending Commit |
+| **Phase 9** | Documentation & Handover | COMPLETED | Comprehensive README, API docs, reproduction instructions | ea1b6fc |
 
 ---
 
