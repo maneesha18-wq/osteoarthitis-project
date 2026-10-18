@@ -40,6 +40,9 @@ ml/data/raw/
 ml/data/processed/
 ml/data/downloads/
 ml/data/kaggle/
+archive/
+data set/
+data\ set/
 *.zip
 *.tar.gz
 *.h5

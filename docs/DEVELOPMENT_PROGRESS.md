@@ -11,8 +11,8 @@
 | Phase | Description | Status | Verification & Test Notes | Commit Hash |
 | :--- | :--- | :--- | :--- | :--- |
 | **Phase 1** | Inspect & Initialize Monorepo | COMPLETED | Monorepo structure, Git setup, `.gitignore`, `.env.example`, runner | 5496634 |
-| **Phase 2** | UI Foundation & Landing Page | COMPLETED | Tailwind color palette, medical design system, landing page, build verified | Pending Commit |
-| **Phase 3** | Authentication & Dashboard | PENDING | Supabase Auth, login/register/reset, protected routes, dashboard | - |
+| **Phase 2** | UI Foundation & Landing Page | COMPLETED | Tailwind color palette, medical design system, landing page, build verified | 94e9c0e |
+| **Phase 3** | Authentication & Dashboard | COMPLETED | Supabase Auth, login/register/reset, protected routes, dashboard | Pending Commit |
 | **Phase 4** | Dataset & ML Pipeline | PENDING | Dataset inspection, MobileNetV2, Baseline CNN, Grad-CAM module | - |
 | **Phase 5** | AI API (FastAPI) | PENDING | `/health`, `/ready`, `/predict`, schema validation, CORS | - |
 | **Phase 6** | Analysis UI & Explainability | PENDING | Drag-and-drop X-ray upload, prediction display, Grad-CAM view | - |
