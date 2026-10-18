@@ -8,7 +8,6 @@ import {
   History,
   Clock,
   ArrowRight,
-  Activity,
   FileText,
   CheckCircle2,
 } from "lucide-react";
@@ -18,61 +17,10 @@ import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Badge, getGradeBadgeVariant } from "@/components/ui/Badge";
 import { fetchAnalyses, AnalysisRecord } from "@/lib/supabase";
 
-interface BackendStatus {
-  status: "online" | "degraded" | "offline" | "checking";
-  modelName: string;
-  modelVersion: string;
-}
-
 export default function DashboardPage() {
   const { user } = useAuth();
-  const [backendStatus, setBackendStatus] = useState<BackendStatus>({
-    status: "checking",
-    modelName: "MobileNetV2",
-    modelVersion: "1.0.0",
-  });
   const [analyses, setAnalyses] = useState<AnalysisRecord[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
-  // Check AI model health
-  useEffect(() => {
-    let isMounted = true;
-    async function checkHealth() {
-      try {
-        const res = await fetch(`${apiUrl}/ready`).catch(() => null);
-        if (!isMounted) return;
-        if (res && res.ok) {
-          const data = await res.json();
-          setBackendStatus({
-            status: data.model_ready ? "online" : "degraded",
-            modelName: data.model_name || "MobileNetV2",
-            modelVersion: data.model_version || "1.0.0",
-          });
-        } else {
-          setBackendStatus({
-            status: "offline",
-            modelName: "MobileNetV2",
-            modelVersion: "1.0.0",
-          });
-        }
-      } catch {
-        if (isMounted) {
-          setBackendStatus({
-            status: "offline",
-            modelName: "MobileNetV2",
-            modelVersion: "1.0.0",
-          });
-        }
-      }
-    }
-
-    checkHealth();
-    return () => {
-      isMounted = false;
-    };
-  }, [apiUrl]);
 
   // Load user's analyses
   useEffect(() => {
@@ -102,7 +50,7 @@ export default function DashboardPage() {
             Welcome back, {displayName}
           </h1>
           <p className="text-xs text-darkGreen font-medium mt-0.5">
-            Knee Osteoarthritis Classification & Grad-CAM Decision Support
+            Knee Osteoarthritis Classification & Grad-CAM Explainability
           </p>
         </div>
 
@@ -112,33 +60,9 @@ export default function DashboardPage() {
       </div>
 
       {/* Essential Metrics Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {/* Model Status */}
-        <Card className="p-4 bg-white border-lightBorder shadow-subtle flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-softBg border border-lightBorder text-sageAccent flex items-center justify-center">
-              <Activity className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-darkGreen">Inference Engine</p>
-              <p className="text-sm font-bold text-darkGreen">
-                {backendStatus.modelName} (v{backendStatus.modelVersion})
-              </p>
-            </div>
-          </div>
-          <span
-            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
-              backendStatus.status === "online"
-                ? "bg-lightSage/50 text-darkGreen border-lightBorder"
-                : "bg-rose-50 text-rose-800 border-rose-200"
-            }`}
-          >
-            {backendStatus.status}
-          </span>
-        </Card>
-
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Total Analyses */}
-        <Card className="p-4 bg-white border-lightBorder shadow-subtle flex items-center gap-3">
+        <Card className="p-4 bg-white border-lightBorder shadow-subtle flex items-center gap-3 hover:border-sageAccent hover:shadow-card hover:-translate-y-0.5 transition-all duration-200 cursor-pointer">
           <div className="w-10 h-10 rounded-lg bg-softBg border border-lightBorder text-sageAccent flex items-center justify-center">
             <FileText className="w-5 h-5" />
           </div>
@@ -151,7 +75,7 @@ export default function DashboardPage() {
         </Card>
 
         {/* Latest Evaluation */}
-        <Card className="p-4 bg-white border-lightBorder shadow-subtle flex items-center gap-3">
+        <Card className="p-4 bg-white border-lightBorder shadow-subtle flex items-center gap-3 hover:border-sageAccent hover:shadow-card hover:-translate-y-0.5 transition-all duration-200 cursor-pointer">
           <div className="w-10 h-10 rounded-lg bg-softBg border border-lightBorder text-sageAccent flex items-center justify-center">
             <CheckCircle2 className="w-5 h-5" />
           </div>
@@ -165,7 +89,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Action Card (No Gradients) */}
-      <Card className="p-6 bg-white border border-lightBorder text-darkGreen flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-subtle">
+      <Card className="p-6 bg-white border border-lightBorder text-darkGreen flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-subtle hover:border-sageAccent hover:shadow-card hover:-translate-y-0.5 transition-all duration-200">
         <div className="space-y-1">
           <h2 className="text-lg font-bold text-darkGreen">
             Analyze Knee Radiograph
@@ -189,7 +113,7 @@ export default function DashboardPage() {
       </Card>
 
       {/* Recent Analyses List */}
-      <Card className="bg-white border-lightBorder shadow-subtle">
+      <Card className="bg-white border-lightBorder shadow-subtle hover:border-sageAccent/60 transition-all duration-200">
         <CardHeader
           title="Recent Analyses"
           action={

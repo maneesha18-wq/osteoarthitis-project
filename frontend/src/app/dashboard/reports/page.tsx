@@ -40,77 +40,125 @@ export default function ReportsPage() {
 
     // Top Header
     doc.setFillColor(41, 69, 54); // Dark Green #294536
-    doc.rect(0, 0, pageWidth, 26, "F");
+    doc.rect(0, 0, pageWidth, 24, "F");
 
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(16);
+    doc.setFontSize(15);
     doc.setFont("helvetica", "bold");
-    doc.text("KneeAI — Radiographic Analysis Report", 14, 14);
+    doc.text("KneeAI — Radiographic Analysis Report", 14, 13);
 
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.text("Kellgren-Lawrence Grading with Grad-CAM Explainability", 14, 21);
+    doc.text("Kellgren-Lawrence Grading with Grad-CAM Explainability", 14, 19);
 
     // Metadata section
     doc.setTextColor(41, 69, 54);
-    doc.setFontSize(11);
+    doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
-    doc.text("Analysis Dossier", 14, 36);
+    doc.text("Analysis Dossier", 14, 32);
 
-    doc.setFontSize(9);
+    doc.setFontSize(8.5);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(104, 130, 115);
-    doc.text(`Analysis ID: ${record.id}`, 14, 43);
-    doc.text(`File Name: ${record.filename}`, 14, 49);
-    doc.text(`Timestamp: ${new Date(record.created_at).toUTCString()}`, 14, 55);
-    doc.text(`Model: ${record.model_name} (v${record.model_version})`, 14, 61);
-    doc.text(`Inference Latency: ${record.inference_time_ms.toFixed(1)} ms`, 14, 67);
+    doc.setTextColor(80, 100, 90);
+    doc.text(`Analysis ID: ${record.id}`, 14, 38);
+    doc.text(`File Name: ${record.filename}`, 14, 43);
+    doc.text(`Timestamp: ${new Date(record.created_at).toUTCString()}`, 14, 48);
+    doc.text(`Model: ${record.model_name} (v${record.model_version}) • Latency: ${record.inference_time_ms.toFixed(1)} ms`, 14, 53);
 
     // Staging Card
     doc.setFillColor(245, 248, 244);
-    doc.roundedRect(14, 74, pageWidth - 28, 28, 3, 3, "F");
+    doc.roundedRect(14, 58, pageWidth - 28, 22, 2.5, 2.5, "F");
 
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(41, 69, 54);
-    doc.text("Predicted Severity Staging:", 20, 84);
+    doc.text("Predicted Severity Staging:", 20, 67);
 
-    doc.setFontSize(13);
+    doc.setFontSize(12);
     doc.setTextColor(107, 148, 117); // Sage Green Accent #6B9475
     doc.text(
       `${record.predicted_grade_label} — ${record.severity_label} (${(
         record.confidence * 100
       ).toFixed(1)}% Confidence)`,
       20,
-      85
+      74
     );
 
+    // Radiograph & Grad-CAM Heatmap Images Section
+    let currentY = 86;
+    const hasOriginal = !!record.original_image_base64;
+    const hasHeatmap = !!(record.gradcam_overlay_base64 || record.gradcam_heatmap_base64);
+
+    if (hasOriginal || hasHeatmap) {
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(41, 69, 54);
+      doc.text("Radiographic Analysis & Grad-CAM Heatmap", 14, currentY);
+      currentY += 5;
+
+      const imgWidth = 86;
+      const imgHeight = 65;
+
+      if (hasOriginal) {
+        try {
+          const origSrc = record.original_image_base64!.startsWith("data:")
+            ? record.original_image_base64!
+            : `data:image/png;base64,${record.original_image_base64}`;
+          doc.addImage(origSrc, "PNG", 14, currentY, imgWidth, imgHeight);
+          doc.setFontSize(8);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(80, 100, 90);
+          doc.text("Original Radiograph (AP)", 14, currentY + imgHeight + 4);
+        } catch {
+          // fallback
+        }
+      }
+
+      if (hasHeatmap) {
+        try {
+          const heatmapData = (record.gradcam_overlay_base64 || record.gradcam_heatmap_base64)!;
+          const heatmapSrc = heatmapData.startsWith("data:")
+            ? heatmapData
+            : `data:image/png;base64,${heatmapData}`;
+          doc.addImage(heatmapSrc, "PNG", 110, currentY, imgWidth, imgHeight);
+          doc.setFontSize(8);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(80, 100, 90);
+          doc.text("Grad-CAM Attention Heatmap", 110, currentY + imgHeight + 4);
+        } catch {
+          // fallback
+        }
+      }
+
+      currentY += imgHeight + 11;
+    }
+
     // Probabilities
-    doc.setFontSize(11);
+    doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(41, 69, 54);
-    doc.text("5-Class Probability Distribution", 14, 114);
+    doc.text("5-Class Probability Distribution", 14, currentY);
+    currentY += 6;
 
-    let yPos = 122;
     record.probabilities.forEach((p) => {
-      doc.setFontSize(9);
+      doc.setFontSize(8.5);
       doc.setFont("helvetica", "normal");
-      doc.setTextColor(104, 130, 115);
-      doc.text(p.label, 14, yPos);
-      doc.text(`${(p.probability * 100).toFixed(2)}%`, 140, yPos);
+      doc.setTextColor(60, 80, 70);
+      doc.text(p.label, 14, currentY);
+      doc.text(`${(p.probability * 100).toFixed(2)}%`, 140, currentY);
 
       doc.setDrawColor(225, 233, 223);
-      doc.line(14, yPos + 2, pageWidth - 14, yPos + 2);
-      yPos += 8;
+      doc.line(14, currentY + 2, pageWidth - 14, currentY + 2);
+      currentY += 6.5;
     });
 
-    // Medical Disclaimer at footer
-    doc.setFontSize(8);
-    doc.setTextColor(150, 150, 150);
+    // Medical Disclaimer at footer (no academic decision support)
+    doc.setFontSize(7.5);
+    doc.setTextColor(140, 140, 140);
     const disclaimer =
-      "DISCLAIMER: This report is generated by an experimental research system for academic decision support only. It does NOT constitute a clinical diagnosis or medical evaluation. All decisions must be made by qualified healthcare practitioners.";
+      "DISCLAIMER: This report is generated by an algorithmic deep learning research evaluation system. It does NOT constitute a clinical diagnosis or medical evaluation. All clinical decisions must be made by qualified healthcare practitioners.";
     const splitDisclaimer = doc.splitTextToSize(disclaimer, pageWidth - 28);
-    doc.text(splitDisclaimer, 14, 275);
+    doc.text(splitDisclaimer, 14, 280);
 
     doc.save(`KneeAI-Report-${record.id.substring(0, 8)}.pdf`);
   };
@@ -134,7 +182,7 @@ export default function ReportsPage() {
         </Button>
       </div>
 
-      <Card className="bg-white border-lightBorder shadow-subtle">
+      <Card className="bg-white border-lightBorder shadow-subtle hover:border-sageAccent/60 transition-all duration-200">
         <CardContent className="p-0">
           {isLoading ? (
             <div className="p-12 text-center text-xs text-darkGreen font-semibold">
@@ -160,7 +208,7 @@ export default function ReportsPage() {
               {analyses.map((record) => (
                 <div
                   key={record.id}
-                  className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-lightSage/20 transition-colors"
+                  className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-lightSage/30 hover:border-l-4 hover:border-l-sageAccent transition-all duration-200"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">

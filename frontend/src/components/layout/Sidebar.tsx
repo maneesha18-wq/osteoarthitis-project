@@ -73,7 +73,7 @@ export const Sidebar: React.FC = () => {
               Knee<span className="text-[#9CC4A4]">AI</span>
             </span>
             <span className="text-[9px] uppercase tracking-wider font-semibold text-[#A8C9B0] mt-1">
-              Decision Support
+              Radiograph Analysis
             </span>
           </div>
         </Link>
@@ -125,7 +125,7 @@ export const Sidebar: React.FC = () => {
               {user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Researcher"}
             </p>
             <p className="text-[10px] text-[#A8C9B0] font-medium truncate">
-              {user?.email || "Academic User"}
+              {user?.email || "Verified Researcher"}
             </p>
           </div>
         </div>

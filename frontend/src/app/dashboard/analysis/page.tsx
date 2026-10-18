@@ -170,6 +170,9 @@ export default function AnalysisPage() {
           has_gradcam: true,
           notes: data.interpretation_notes,
           created_at: data.timestamp,
+          original_image_base64: data.original_image_base64,
+          gradcam_heatmap_base64: data.gradcam_heatmap_base64,
+          gradcam_overlay_base64: data.gradcam_overlay_base64,
         },
         user?.id
       );
@@ -190,79 +193,126 @@ export default function AnalysisPage() {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
 
-    // Header
+    // Top Header Banner
     doc.setFillColor(41, 69, 54); // Dark Green #294536
-    doc.rect(0, 0, pageWidth, 26, "F");
+    doc.rect(0, 0, pageWidth, 24, "F");
 
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(16);
+    doc.setFontSize(15);
     doc.setFont("helvetica", "bold");
-    doc.text("KneeAI — Radiographic Analysis Report", 14, 14);
+    doc.text("KneeAI — Radiographic Analysis Report", 14, 13);
 
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.text("Kellgren-Lawrence Grading with Grad-CAM Explainability", 14, 21);
+    doc.text("Kellgren-Lawrence Grading with Grad-CAM Explainability", 14, 19);
 
     // Metadata section
     doc.setTextColor(41, 69, 54);
-    doc.setFontSize(11);
-    doc.setFont("helvetica", "bold");
-    doc.text("Analysis Dossier", 14, 36);
-
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(104, 130, 115);
-    doc.text(`Analysis ID: ${result.analysis_id}`, 14, 43);
-    doc.text(`Timestamp: ${new Date(result.timestamp).toUTCString()}`, 14, 49);
-    doc.text(`Model: ${result.model_name} (v${result.model_version})`, 14, 55);
-    doc.text(`Inference Latency: ${result.inference_time_ms.toFixed(1)} ms`, 14, 61);
-
-    // Result summary
-    doc.setFillColor(245, 248, 244);
-    doc.roundedRect(14, 68, pageWidth - 28, 28, 3, 3, "F");
-
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(41, 69, 54);
-    doc.text("Predicted Severity Staging:", 20, 78);
+    doc.text("Analysis Dossier", 14, 32);
 
-    doc.setFontSize(13);
+    doc.setFontSize(8.5);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(80, 100, 90);
+    doc.text(`Analysis ID: ${result.analysis_id}`, 14, 38);
+    doc.text(`Timestamp: ${new Date(result.timestamp).toUTCString()}`, 14, 43);
+    doc.text(`Model: ${result.model_name} (v${result.model_version}) • Latency: ${result.inference_time_ms.toFixed(1)} ms`, 14, 48);
+
+    // Staging Card
+    doc.setFillColor(245, 248, 244);
+    doc.roundedRect(14, 53, pageWidth - 28, 22, 2.5, 2.5, "F");
+
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(41, 69, 54);
+    doc.text("Predicted Severity Staging:", 20, 62);
+
+    doc.setFontSize(12);
     doc.setTextColor(107, 148, 117); // Sage Green Accent #6B9475
     doc.text(
       `${result.predicted_grade} — ${result.severity_label} (${(
         result.confidence * 100
       ).toFixed(1)}% Confidence)`,
       20,
-      86
+      69
     );
 
-    // Probability Table
-    doc.setFontSize(11);
+    // Radiograph & Grad-CAM Heatmap Images Section
+    let currentY = 82;
+    const hasOriginal = !!result.original_image_base64;
+    const hasHeatmap = !!(result.gradcam_overlay_base64 || result.gradcam_heatmap_base64);
+
+    if (hasOriginal || hasHeatmap) {
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(41, 69, 54);
+      doc.text("Radiographic Analysis & Grad-CAM Heatmap", 14, currentY);
+      currentY += 5;
+
+      const imgWidth = 86;
+      const imgHeight = 65;
+
+      if (hasOriginal) {
+        try {
+          const origSrc = result.original_image_base64.startsWith("data:")
+            ? result.original_image_base64
+            : `data:image/png;base64,${result.original_image_base64}`;
+          doc.addImage(origSrc, "PNG", 14, currentY, imgWidth, imgHeight);
+          doc.setFontSize(8);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(80, 100, 90);
+          doc.text("Original Radiograph (AP)", 14, currentY + imgHeight + 4);
+        } catch {
+          // fallback if format issue
+        }
+      }
+
+      if (hasHeatmap) {
+        try {
+          const heatmapData = result.gradcam_overlay_base64 || result.gradcam_heatmap_base64;
+          const heatmapSrc = heatmapData.startsWith("data:")
+            ? heatmapData
+            : `data:image/png;base64,${heatmapData}`;
+          doc.addImage(heatmapSrc, "PNG", 110, currentY, imgWidth, imgHeight);
+          doc.setFontSize(8);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(80, 100, 90);
+          doc.text("Grad-CAM Attention Heatmap", 110, currentY + imgHeight + 4);
+        } catch {
+          // fallback if format issue
+        }
+      }
+
+      currentY += imgHeight + 11;
+    }
+
+    // Probability Distribution Section
+    doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(41, 69, 54);
-    doc.text("5-Class Probability Distribution", 14, 108);
+    doc.text("5-Class Probability Distribution", 14, currentY);
+    currentY += 6;
 
-    let yPos = 116;
     result.probabilities.forEach((p) => {
-      doc.setFontSize(9);
+      doc.setFontSize(8.5);
       doc.setFont("helvetica", "normal");
-      doc.setTextColor(104, 130, 115);
-      doc.text(p.label, 14, yPos);
-      doc.text(`${(p.probability * 100).toFixed(2)}%`, 140, yPos);
+      doc.setTextColor(60, 80, 70);
+      doc.text(p.label, 14, currentY);
+      doc.text(`${(p.probability * 100).toFixed(2)}%`, 140, currentY);
 
-      // Draw progress line
       doc.setDrawColor(225, 233, 223);
-      doc.line(14, yPos + 2, pageWidth - 14, yPos + 2);
-      yPos += 8;
+      doc.line(14, currentY + 2, pageWidth - 14, currentY + 2);
+      currentY += 6.5;
     });
 
-    // Medical Disclaimer at footer
-    doc.setFontSize(8);
-    doc.setTextColor(150, 150, 150);
+    // Medical Disclaimer at footer (no academic decision support)
+    doc.setFontSize(7.5);
+    doc.setTextColor(140, 140, 140);
     const disclaimer =
-      "DISCLAIMER: This report is generated by an experimental research system for academic decision support only. It does NOT constitute a clinical diagnosis or medical evaluation. All decisions must be made by qualified healthcare practitioners.";
+      "DISCLAIMER: This report is generated by an algorithmic deep learning research evaluation system. It does NOT constitute a clinical diagnosis or medical evaluation. All clinical decisions must be made by qualified healthcare practitioners.";
     const splitDisclaimer = doc.splitTextToSize(disclaimer, pageWidth - 28);
-    doc.text(splitDisclaimer, 14, 275);
+    doc.text(splitDisclaimer, 14, 280);
 
     doc.save(`KneeAI-Analysis-${result.analysis_id.substring(0, 8)}.pdf`);
   };
@@ -299,7 +349,7 @@ export default function AnalysisPage() {
       <div className="p-3.5 rounded-xl bg-softBg border border-lightBorder flex items-start gap-3">
         <Info className="w-4 h-4 text-sageAccent shrink-0 mt-0.5" />
         <p className="text-xs text-darkGreen leading-relaxed font-medium">
-          <strong className="text-darkGreen font-bold">Academic Decision Support:</strong> This system evaluates radiograph features using deep learning for educational research. Predictions and Grad-CAM activations do not replace certified radiological examination.
+          <strong className="text-darkGreen font-bold">Research Notice:</strong> This system evaluates radiograph features using deep learning for evaluation. Predictions and Grad-CAM activations do not replace certified radiological examination.
         </p>
       </div>
 
@@ -319,7 +369,7 @@ export default function AnalysisPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Upload Drop Zone */}
           <div className="lg:col-span-8 space-y-6">
-            <Card className="p-6 bg-white border-lightBorder shadow-subtle">
+            <Card className="p-6 bg-white border-lightBorder shadow-subtle hover:border-sageAccent/60 transition-all duration-200">
               <div
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
@@ -457,7 +507,7 @@ export default function AnalysisPage() {
 
           {/* Right Column: Radiograph Guidance Checklist */}
           <div className="lg:col-span-4 space-y-6">
-            <Card className="bg-white border-lightBorder shadow-subtle">
+            <Card className="bg-white border-lightBorder shadow-subtle hover:border-sageAccent/60 transition-all duration-200">
               <CardHeader
                 title="Radiograph Checklist"
                 subtitle="Ensure optimal accuracy for inference"
@@ -478,7 +528,7 @@ export default function AnalysisPage() {
               </CardContent>
             </Card>
 
-            <Card className="p-4 bg-softBg border border-lightBorder text-xs text-darkGreen font-medium space-y-2">
+            <Card className="p-4 bg-softBg border border-lightBorder text-xs text-darkGreen font-medium space-y-2 hover:border-sageAccent/60 transition-all duration-200">
               <span className="font-bold text-darkGreen block">KL Scale Reminder</span>
               <p>
                 <strong className="text-darkGreen">Grade 0:</strong> Normal • <strong className="text-darkGreen">Grade 1:</strong> Doubtful • <strong className="text-darkGreen">Grade 2:</strong> Mild • <strong className="text-darkGreen">Grade 3:</strong> Moderate • <strong className="text-darkGreen">Grade 4:</strong> Severe
@@ -492,7 +542,7 @@ export default function AnalysisPage() {
         /* ================================================================ */
         <div className="space-y-8">
           {/* Main Grade Summary Banner */}
-          <Card className="p-6 bg-white border border-lightBorder shadow-subtle">
+          <Card className="p-6 bg-white border border-lightBorder shadow-subtle hover:border-sageAccent/60 transition-all duration-200">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
               <div className="md:col-span-8 space-y-2">
                 <div className="flex items-center gap-3">

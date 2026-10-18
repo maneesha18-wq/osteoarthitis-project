@@ -30,10 +30,10 @@ export default function ProfilePage() {
         </p>
       </div>
 
-      <Card className="bg-white border-lightBorder shadow-subtle">
+      <Card className="bg-white border-lightBorder shadow-subtle hover:border-sageAccent transition-all duration-200">
         <CardHeader
           title="Account Details"
-          subtitle="Information associated with your KneeAI decision-support access"
+          subtitle="Information associated with your KneeAI researcher account"
         />
         <CardContent>
           {isSaved && (

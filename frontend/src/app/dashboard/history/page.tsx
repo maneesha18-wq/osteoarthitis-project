@@ -70,7 +70,7 @@ export default function HistoryPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <Card className="p-4 bg-white border border-lightBorder shadow-subtle">
+      <Card className="p-4 bg-white border border-lightBorder shadow-subtle hover:border-sageAccent/60 transition-all duration-200">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-darkGreen" />
@@ -108,7 +108,7 @@ export default function HistoryPage() {
       </Card>
 
       {/* Table / Records Area */}
-      <Card className="bg-white border-lightBorder shadow-subtle">
+      <Card className="bg-white border-lightBorder shadow-subtle hover:border-sageAccent/60 transition-all duration-200">
         <CardContent className="p-0">
           {isLoading ? (
             <div className="p-12 text-center text-xs text-darkGreen font-medium">

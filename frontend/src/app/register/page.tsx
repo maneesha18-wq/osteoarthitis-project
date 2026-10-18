@@ -74,7 +74,7 @@ export default function RegisterPage() {
     }
 
     if (!termsAccepted) {
-      setError("Please acknowledge the research decision-support terms to proceed.");
+      setError("Please acknowledge the research evaluation terms to proceed.");
       return;
     }
 
@@ -122,7 +122,7 @@ export default function RegisterPage() {
             </span>
           </div>
           <p className="text-xs uppercase tracking-wider font-bold text-darkGreen">
-            Deep Learning Decision Support
+            Deep Learning Radiograph Analysis
           </p>
         </div>
 
@@ -140,11 +140,11 @@ export default function RegisterPage() {
         </div>
 
         {/* Main Register Card */}
-        <Card className="p-8 shadow-subtle border-lightBorder bg-white">
+        <Card className="p-8 shadow-subtle border-lightBorder bg-white hover:border-sageAccent hover:shadow-card transition-all duration-200">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-darkGreen">Create Your Account</h2>
             <p className="text-xs text-darkGreen font-medium mt-1">
-              Join the explainable knee radiograph decision support platform.
+              Join the explainable knee radiograph evaluation platform.
             </p>
           </div>
 
@@ -338,7 +338,7 @@ export default function RegisterPage() {
                   htmlFor="terms"
                   className="ml-2 block text-xs text-darkGreen font-semibold cursor-pointer select-none leading-relaxed"
                 >
-                  I acknowledge that KneeAI is an academic decision-support research tool and predictions are not a substitute for certified medical diagnosis.
+                  I acknowledge that KneeAI is an automated research evaluation tool and predictions are not a substitute for certified medical diagnosis.
                 </label>
               </div>
 
@@ -376,9 +376,9 @@ export default function RegisterPage() {
           </div>
         </Card>
 
-        {/* Academic Medical Disclaimer */}
+        {/* System Disclaimer */}
         <p className="mt-6 text-center text-xs text-darkGreen font-medium max-w-sm mx-auto leading-relaxed">
-          KneeAI Academic Decision Support Platform • Experimental Deep Learning Research Use Only
+          KneeAI Automated Radiograph Analysis Platform • Kellgren-Lawrence Grading
         </p>
       </div>
     </div>

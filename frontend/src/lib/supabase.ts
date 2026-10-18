@@ -64,6 +64,9 @@ export interface AnalysisRecord {
   has_gradcam: boolean;
   notes?: string;
   created_at: string;
+  original_image_base64?: string;
+  gradcam_heatmap_base64?: string;
+  gradcam_overlay_base64?: string;
 }
 
 const LOCAL_STORAGE_KEY = "kneeai_local_analyses";

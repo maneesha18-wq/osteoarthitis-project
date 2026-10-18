@@ -89,7 +89,7 @@ export default function InitialAuthPage() {
             </span>
           </div>
           <p className="text-xs uppercase tracking-wider font-bold text-darkGreen">
-            Deep Learning Decision Support
+            Deep Learning Radiograph Analysis
           </p>
         </div>
 
@@ -107,7 +107,7 @@ export default function InitialAuthPage() {
         </div>
 
         {/* Main Login Card */}
-        <Card className="p-8 shadow-subtle border-lightBorder bg-white">
+        <Card className="p-8 shadow-subtle border-lightBorder bg-white hover:border-sageAccent hover:shadow-card transition-all duration-200">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-darkGreen">Welcome Back</h2>
             <p className="text-xs text-darkGreen font-medium mt-1">
@@ -264,9 +264,9 @@ export default function InitialAuthPage() {
           </div>
         </Card>
 
-        {/* Academic Medical Disclaimer */}
+        {/* System Disclaimer */}
         <p className="mt-6 text-center text-xs text-darkGreen font-medium max-w-sm mx-auto leading-relaxed">
-          KneeAI Academic Decision Support Platform • Experimental Deep Learning Research Use Only
+          KneeAI Automated Radiograph Analysis Platform • Kellgren-Lawrence Grading
         </p>
       </div>
     </div>
