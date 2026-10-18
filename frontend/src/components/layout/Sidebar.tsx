@@ -61,25 +61,25 @@ export const Sidebar: React.FC = () => {
   };
 
   const NavContent = (
-    <div className="flex flex-col h-full bg-navy-800 text-white w-64 select-none">
+    <div className="flex flex-col h-full bg-white border-r border-lightBorder text-darkBrown w-64 select-none">
       {/* Brand Header */}
-      <div className="p-6 border-b border-navy-700/80 flex items-center justify-between">
+      <div className="p-6 border-b border-lightBorder flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-lg bg-teal-600 flex items-center justify-center text-white shadow-sm">
+          <div className="w-9 h-9 rounded-lg bg-warmWhite border border-lightBorder flex items-center justify-center text-beigeAccent shadow-subtle">
             <Activity className="w-5 h-5 stroke-[2.5]" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-lg tracking-tight text-white leading-none">
-              Knee<span className="text-teal-400">AI</span>
+            <span className="font-bold text-lg tracking-tight text-darkBrown leading-none">
+              Knee<span className="text-beigeAccent">AI</span>
             </span>
-            <span className="text-[9px] uppercase tracking-wider font-semibold text-slate-300 mt-1">
+            <span className="text-[9px] uppercase tracking-wider font-semibold text-darkBrown-muted mt-1">
               Decision Support
             </span>
           </div>
         </Link>
         <button
           onClick={() => setIsMobileOpen(false)}
-          className="lg:hidden text-slate-400 hover:text-white"
+          className="lg:hidden text-darkBrown-muted hover:text-darkBrown"
         >
           <X className="w-5 h-5" />
         </button>
@@ -87,7 +87,7 @@ export const Sidebar: React.FC = () => {
 
       {/* Navigation Links */}
       <nav className="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto">
-        <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+        <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-darkBrown-muted mb-2">
           Clinical Navigation
         </p>
         {navItems.map((item) => {
@@ -101,13 +101,13 @@ export const Sidebar: React.FC = () => {
               key={item.label}
               href={item.href}
               onClick={() => setIsMobileOpen(false)}
-              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm transition-colors ${
                 isActive
-                  ? "bg-teal-600 text-white shadow-sm font-semibold"
-                  : "text-slate-300 hover:bg-navy-700/70 hover:text-white"
+                  ? "bg-beigeAccent text-white shadow-subtle font-medium"
+                  : "text-darkBrown-light hover:bg-softBeige/40 hover:text-darkBrown"
               }`}
             >
-              <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-slate-300"}`} />
+              <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-darkBrown-muted"}`} />
               <span>{item.label}</span>
             </Link>
           );
@@ -115,16 +115,16 @@ export const Sidebar: React.FC = () => {
       </nav>
 
       {/* User Info & Logout Footer */}
-      <div className="p-4 border-t border-navy-700/80 bg-navy-900/40">
+      <div className="p-4 border-t border-lightBorder bg-warmWhite">
         <div className="flex items-center gap-3 px-2 py-1 mb-3">
-          <div className="w-8 h-8 rounded-full bg-medBlue-700 text-white flex items-center justify-center text-xs font-bold">
+          <div className="w-8 h-8 rounded-full bg-softBeige border border-lightBorder text-darkBrown flex items-center justify-center text-xs font-bold">
             {user?.email?.charAt(0).toUpperCase() || "R"}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-white truncate">
+            <p className="text-xs font-semibold text-darkBrown truncate">
               {user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Researcher"}
             </p>
-            <p className="text-[10px] text-slate-400 truncate">
+            <p className="text-[10px] text-darkBrown-muted truncate">
               {user?.email || "Academic User"}
             </p>
           </div>
@@ -132,7 +132,7 @@ export const Sidebar: React.FC = () => {
 
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-rose-300 hover:bg-rose-950/40 hover:text-rose-200 transition-colors"
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-rose-700 hover:bg-rose-50 hover:text-rose-800 transition-colors"
         >
           <LogOut className="w-4 h-4" />
           <span>Sign Out</span>
@@ -144,21 +144,21 @@ export const Sidebar: React.FC = () => {
   return (
     <>
       {/* Mobile Hamburger Header */}
-      <div className="lg:hidden bg-navy-800 text-white px-4 py-3 flex items-center justify-between border-b border-navy-700">
+      <div className="lg:hidden bg-white text-darkBrown px-4 py-3 flex items-center justify-between border-b border-lightBorder">
         <Link href="/" className="flex items-center gap-2">
-          <Activity className="w-5 h-5 text-teal-400" />
-          <span className="font-bold text-base">KneeAI Portal</span>
+          <Activity className="w-5 h-5 text-beigeAccent" />
+          <span className="font-bold text-base text-darkBrown">KneeAI Portal</span>
         </Link>
         <button
           onClick={() => setIsMobileOpen(true)}
-          className="p-1 rounded text-slate-300 hover:text-white focus:outline-none"
+          className="p-1 rounded text-darkBrown-muted hover:text-darkBrown focus:outline-none"
         >
           <Menu className="w-6 h-6" />
         </button>
       </div>
 
       {/* Desktop Persistent Sidebar */}
-      <aside className="hidden lg:flex shrink-0 h-screen sticky top-0 shadow-lg z-40">
+      <aside className="hidden lg:flex shrink-0 h-screen sticky top-0 z-40">
         {NavContent}
       </aside>
 

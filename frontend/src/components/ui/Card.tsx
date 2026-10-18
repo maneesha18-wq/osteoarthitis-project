@@ -14,8 +14,8 @@ export const Card: React.FC<CardProps> = ({
 }) => {
   return (
     <div
-      className={`bg-white rounded-xl border border-slate-200/80 shadow-subtle ${
-        hoverEffect ? "transition-all duration-200 hover:shadow-card hover:border-slate-300" : ""
+      className={`bg-white rounded-xl border border-lightBorder shadow-subtle ${
+        hoverEffect ? "transition-all duration-200 hover:shadow-card hover:border-[#D6CBC0]" : ""
       } ${className}`}
       {...props}
     >
@@ -30,10 +30,10 @@ export const CardHeader: React.FC<{
   action?: React.ReactNode;
   className?: string;
 }> = ({ title, subtitle, action, className = "" }) => (
-  <div className={`p-5 pb-3 border-b border-slate-100 flex items-start justify-between ${className}`}>
+  <div className={`p-5 pb-3 border-b border-lightBorder flex items-start justify-between ${className}`}>
     <div>
-      <h3 className="text-base font-semibold text-navy-800">{title}</h3>
-      {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+      <h3 className="text-base font-semibold text-darkBrown">{title}</h3>
+      {subtitle && <p className="text-xs text-darkBrown-muted mt-0.5">{subtitle}</p>}
     </div>
     {action && <div>{action}</div>}
   </div>

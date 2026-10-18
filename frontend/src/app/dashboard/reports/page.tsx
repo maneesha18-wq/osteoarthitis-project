@@ -117,15 +117,15 @@ export default function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200/80 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-lightBorder pb-6">
         <div>
-          <span className="text-xs font-semibold text-teal-600 uppercase tracking-wider">
+          <span className="text-xs font-semibold text-beigeAccent uppercase tracking-wider">
             Clinical Documentation
           </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-navy-800 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-darkBrown mt-1">
             Clinical & Research Reports
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-darkBrown-muted mt-1">
             Download timestamped PDF evaluation dossiers with 5-class distributions and metadata
           </p>
         </div>
@@ -134,21 +134,21 @@ export default function ReportsPage() {
         </Button>
       </div>
 
-      <Card>
+      <Card className="bg-white border-lightBorder shadow-subtle">
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="p-12 text-center text-xs text-slate-500">
+            <div className="p-12 text-center text-xs text-darkBrown-muted">
               Loading available reports...
             </div>
           ) : analyses.length === 0 ? (
             <div className="text-center py-16 px-4">
-              <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+              <div className="w-12 h-12 rounded-full bg-warmWhite border border-lightBorder text-beigeAccent flex items-center justify-center mx-auto mb-3">
                 <FileCheck className="w-6 h-6" />
               </div>
-              <h4 className="text-sm font-bold text-navy-800">
+              <h4 className="text-sm font-bold text-darkBrown">
                 No Reports Generated Yet
               </h4>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
+              <p className="text-xs text-darkBrown-muted max-w-sm mx-auto mt-1 mb-4">
                 When an X-ray is analyzed on the New Analysis page, you can generate and download a comprehensive clinical PDF summary report.
               </p>
               <Button variant="outline" size="sm" href="/dashboard/analysis">
@@ -156,23 +156,23 @@ export default function ReportsPage() {
               </Button>
             </div>
           ) : (
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-lightBorder">
               {analyses.map((record) => (
                 <div
                   key={record.id}
-                  className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors"
+                  className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-warmWhite/60 transition-colors"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-navy-900">
+                      <span className="font-bold text-sm text-darkBrown">
                         {record.filename}
                       </span>
                       <Badge variant={getGradeBadgeVariant(record.predicted_grade)}>
                         {record.predicted_grade_label} ({record.severity_label})
                       </Badge>
                     </div>
-                    <div className="flex flex-wrap gap-3 text-xs text-slate-400">
-                      <span>ID: <code className="font-mono">{record.id.substring(0, 8)}...</code></span>
+                    <div className="flex flex-wrap gap-3 text-xs text-darkBrown-muted">
+                      <span>ID: <code className="font-mono text-darkBrown-light">{record.id.substring(0, 8)}...</code></span>
                       <span>•</span>
                       <span>Confidence: {(record.confidence * 100).toFixed(1)}%</span>
                       <span>•</span>

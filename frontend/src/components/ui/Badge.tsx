@@ -14,16 +14,16 @@ export const Badge: React.FC<BadgeProps> = ({
   className = "",
 }) => {
   const variants = {
-    grade0: "bg-emerald-50 text-emerald-800 border-emerald-200", // Normal
-    grade1: "bg-sky-50 text-sky-800 border-sky-200",             // Doubtful
-    grade2: "bg-amber-50 text-amber-800 border-amber-200",       // Mild
-    grade3: "bg-orange-50 text-orange-800 border-orange-200",    // Moderate
-    grade4: "bg-rose-50 text-rose-800 border-rose-200",          // Severe
-    success: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    warning: "bg-amber-50 text-amber-700 border-amber-200",
-    danger: "bg-rose-50 text-rose-700 border-rose-200",
-    neutral: "bg-slate-100 text-slate-700 border-slate-200",
-    teal: "bg-teal-50 text-teal-700 border-teal-200",
+    grade0: "bg-warmWhite text-darkBrown border-lightBorder",
+    grade1: "bg-[#F5EFE6] text-darkBrown-light border-softBeige",
+    grade2: "bg-softBeige text-darkBrown border-beigeAccent/50 font-medium",
+    grade3: "bg-[#DFD1C0] text-darkBrown border-beigeAccent font-medium",
+    grade4: "bg-darkBrown text-white border-darkBrown font-medium",
+    success: "bg-[#F5EFE6] text-darkBrown border-softBeige",
+    warning: "bg-softBeige text-darkBrown border-beigeAccent",
+    danger: "bg-darkBrown text-white border-darkBrown",
+    neutral: "bg-warmWhite text-darkBrown border-lightBorder",
+    teal: "bg-softBeige text-darkBrown border-beigeAccent/40",
   };
 
   const sizes = {

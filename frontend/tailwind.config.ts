@@ -9,45 +9,60 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Master Design Palette
-        navy: {
-          900: "#0C1B2A",
-          800: "#16324F", // Deep Navy primary
-          700: "#1F4268",
-          600: "#2B5885",
-          100: "#E3EBF3",
-          50: "#F0F5FA",
+        // Minimal Warm White & Beige Palette
+        warmWhite: "#FAF7F2",
+        softBeige: "#E9DED1",
+        beigeAccent: {
+          DEFAULT: "#B49A83",
+          hover: "#A3876F",
+          light: "#F3EEE8",
         },
-        medBlue: {
-          800: "#1B4454",
-          700: "#245B70", // Medical Blue
-          600: "#2F738E",
-          100: "#E6EFF2",
-          50: "#F2F7F9",
+        darkBrown: {
+          DEFAULT: "#40362F",
+          light: "#63564D",
+          muted: "#8C7C70",
         },
-        teal: {
-          800: "#346662",
-          700: "#3D7A75",
-          600: "#4D9690", // Muted Medical Teal
-          500: "#5CAFA9",
-          200: "#B8DFDC",
-          100: "#DDF1F0",
-          50: "#F0FAF9",
-        },
+        lightBorder: "#E8E1D9",
+
+        // Palette Aliases for Consistent System Theming
         surface: {
-          offwhite: "#F4F7F8", // Cool Off-White
+          offwhite: "#FAF7F2",
           white: "#FFFFFF",
           card: "#FFFFFF",
-          border: "#E2E8F0",
+          border: "#E8E1D9",
+        },
+        navy: {
+          900: "#40362F",
+          800: "#40362F", // Dark brown primary text
+          700: "#54473F",
+          600: "#695A50",
+          100: "#E9DED1",
+          50: "#FAF7F2",
+        },
+        medBlue: {
+          800: "#40362F",
+          700: "#B49A83",
+          600: "#B49A83",
+          100: "#E9DED1",
+          50: "#FAF7F2",
+        },
+        teal: {
+          800: "#8C735D",
+          700: "#A3876F",
+          600: "#B49A83", // Beige accent primary
+          500: "#C4AD98",
+          200: "#E9DED1",
+          100: "#F3EEE8",
+          50: "#FAF7F2",
         },
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "-apple-system", "sans-serif"],
       },
       boxShadow: {
-        subtle: "0 1px 3px 0 rgba(22, 50, 79, 0.05), 0 1px 2px 0 rgba(22, 50, 79, 0.03)",
-        card: "0 4px 6px -1px rgba(22, 50, 79, 0.06), 0 2px 4px -1px rgba(22, 50, 79, 0.03)",
-        elevated: "0 10px 15px -3px rgba(22, 50, 79, 0.08), 0 4px 6px -2px rgba(22, 50, 79, 0.04)",
+        subtle: "0 1px 3px 0 rgba(64, 54, 47, 0.04), 0 1px 2px 0 rgba(64, 54, 47, 0.02)",
+        card: "0 4px 6px -1px rgba(64, 54, 47, 0.05), 0 2px 4px -1px rgba(64, 54, 47, 0.02)",
+        elevated: "0 10px 15px -3px rgba(64, 54, 47, 0.06), 0 4px 6px -2px rgba(64, 54, 47, 0.03)",
       },
     },
   },

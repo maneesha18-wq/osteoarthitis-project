@@ -17,19 +17,19 @@ export const Navbar: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-lightBorder">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-lg bg-navy-800 flex items-center justify-center text-teal-500 shadow-sm transition-transform duration-200 group-hover:scale-105">
+            <div className="w-10 h-10 rounded-lg bg-warmWhite border border-lightBorder flex items-center justify-center text-beigeAccent shadow-subtle transition-transform duration-200 group-hover:scale-105">
               <Activity className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-xl tracking-tight text-navy-800">
-                Knee<span className="text-teal-600">AI</span>
+              <span className="font-bold text-xl tracking-tight text-darkBrown">
+                Knee<span className="text-beigeAccent">AI</span>
               </span>
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 -mt-1">
+              <span className="text-[10px] uppercase tracking-wider font-semibold text-darkBrown-muted -mt-1">
                 Deep Learning Decision Support
               </span>
             </div>
@@ -41,7 +41,7 @@ export const Navbar: React.FC = () => {
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-sm font-medium text-slate-600 hover:text-navy-800 transition-colors"
+                className="text-sm font-medium text-darkBrown-muted hover:text-darkBrown transition-colors"
               >
                 {link.label}
               </Link>
