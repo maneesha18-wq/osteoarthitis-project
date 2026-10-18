@@ -16,9 +16,9 @@
 | **Phase 4** | Dataset & ML Pipeline | COMPLETED | Dataset inspection (2,264 images), MobileNetV2, Grad-CAM, metrics | Pending Commit |
 | **Phase 5** | AI API (FastAPI) | COMPLETED | `/health`, `/ready`, `/predict`, schema validation, 5/5 tests passing | Pending Commit |
 | **Phase 6** | Analysis UI & Explainability | COMPLETED | Drag-and-drop upload, real-time prediction, Grad-CAM view, PDF export | Pending Commit |
-| **Phase 7** | Database, History & Reports | COMPLETED | Supabase RLS schema, user history filtering, on-demand PDF dossiers | Pending Commit |
-| **Phase 8** | Quality Assurance & Testing | COMPLETED | Full Next.js production build, automated backend unittest suite (5/5) | Pending Commit |
-| **Phase 9** | Documentation & Handover | IN_PROGRESS | Comprehensive README, API docs, reproduction instructions | - |
+| **Phase 7** | Database, History & Reports | COMPLETED | Supabase RLS schema, user history filtering, on-demand PDF dossiers | 8b249f5 |
+| **Phase 8** | Quality Assurance & Testing | COMPLETED | Full Next.js production build, automated backend unittest suite (5/5) | 8b249f5 |
+| **Phase 9** | Documentation & Handover | COMPLETED | Comprehensive README, API docs, reproduction instructions | Pending Commit |
 
 ---
 
