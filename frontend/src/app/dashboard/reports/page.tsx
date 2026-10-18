@@ -124,7 +124,7 @@ export default function ReportsPage() {
           doc.setFontSize(8);
           doc.setFont("helvetica", "bold");
           doc.setTextColor(80, 100, 90);
-          doc.text("Grad-CAM Attention Heatmap", 110, currentY + imgHeight + 4);
+          doc.text("Articular Cartilage & Joint Map", 110, currentY + imgHeight + 4);
         } catch {
           // fallback
         }

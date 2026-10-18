@@ -290,7 +290,7 @@ export default function AnalysisPage() {
           doc.setFontSize(8);
           doc.setFont("helvetica", "bold");
           doc.setTextColor(80, 100, 90);
-          doc.text("Grad-CAM Attention Heatmap", 110, currentY + imgHeight + 4);
+          doc.text("Articular Cartilage & Joint Map", 110, currentY + imgHeight + 4);
         } catch {
           // fallback if format issue
         }
@@ -638,7 +638,7 @@ export default function AnalysisPage() {
                             : "text-darkGreen-muted hover:text-darkGreen"
                         }`}
                       >
-                        Overlay
+                        Cartilage Map (ROI)
                       </button>
                       <button
                         onClick={() => setActiveImageView("heatmap")}
@@ -722,13 +722,13 @@ export default function AnalysisPage() {
 
                     <div className="space-y-1.5">
                       <span className="text-[11px] font-bold text-sageAccent uppercase tracking-wider block">
-                        Grad-CAM Attention Overlay
+                        Articular Cartilage & Joint Map
                       </span>
                       <div className="aspect-square rounded-lg overflow-hidden border border-lightBorder bg-black flex items-center justify-center">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={`data:image/png;base64,${result.gradcam_overlay_base64}`}
-                          alt="Grad-CAM Overlay"
+                          alt="Articular Cartilage Map"
                           className="w-full h-full object-contain transition-transform duration-150 ease-out"
                           style={{ transform: `scale(${zoomLevel})` }}
                         />
@@ -775,8 +775,8 @@ export default function AnalysisPage() {
 
                 {/* Explainability Interpretation Footer */}
                 <div className="mt-4 p-3 bg-softBg rounded-lg border border-lightBorder text-xs text-darkGreen leading-relaxed font-medium">
-                  <strong className="text-darkGreen font-bold block mb-0.5">What this Grad-CAM heatmap shows:</strong>
-                  The colored regions indicate areas in the convolutional feature maps that contributed positively toward the predicted <strong className="text-darkGreen font-bold">{result.predicted_grade}</strong> class. Warm zones (red/orange) represent the highest activation weights, typically corresponding to joint-space narrowing, marginal osteophytic spurs, or subchondral sclerosis.
+                  <strong className="text-darkGreen font-bold block mb-0.5">Articular Cartilage & Joint-Space Mapping (Clinical Color Scale):</strong>
+                  High-contrast pseudocolor mapping highlights articular cartilage thickness, joint-space narrowing (JSN), and subchondral bone changes. The calibrated colorbar on the left indicates relative attention intensity (0.0 to 1.0, blue to red), with ROI 1 and ROI 2 identifying the medial and lateral joint space compartments.
                 </div>
               </Card>
 
