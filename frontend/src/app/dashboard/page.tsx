@@ -98,10 +98,10 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-lightBorder">
         <div>
-          <h1 className="text-2xl font-bold text-darkBrown">
+          <h1 className="text-2xl font-bold text-darkGreen">
             Welcome back, {displayName}
           </h1>
-          <p className="text-xs text-darkBrown-muted mt-0.5">
+          <p className="text-xs text-darkGreen-muted mt-0.5">
             Knee Osteoarthritis Classification & Grad-CAM Decision Support
           </p>
         </div>
@@ -116,12 +116,12 @@ export default function DashboardPage() {
         {/* Model Status */}
         <Card className="p-4 bg-white border-lightBorder shadow-subtle flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-warmWhite border border-lightBorder text-beigeAccent flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-softBg border border-lightBorder text-sageAccent flex items-center justify-center">
               <Activity className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-medium text-darkBrown-muted">Inference Engine</p>
-              <p className="text-sm font-bold text-darkBrown">
+              <p className="text-xs font-medium text-darkGreen-muted">Inference Engine</p>
+              <p className="text-sm font-bold text-darkGreen">
                 {backendStatus.modelName} (v{backendStatus.modelVersion})
               </p>
             </div>
@@ -129,7 +129,7 @@ export default function DashboardPage() {
           <span
             className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
               backendStatus.status === "online"
-                ? "bg-[#F5EFE6] text-darkBrown border-lightBorder"
+                ? "bg-lightSage/50 text-darkGreen border-lightBorder"
                 : "bg-rose-50 text-rose-800 border-rose-200"
             }`}
           >
@@ -139,12 +139,12 @@ export default function DashboardPage() {
 
         {/* Total Analyses */}
         <Card className="p-4 bg-white border-lightBorder shadow-subtle flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-warmWhite border border-lightBorder text-beigeAccent flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-softBg border border-lightBorder text-sageAccent flex items-center justify-center">
             <FileText className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-xs font-medium text-darkBrown-muted">Total Evaluations</p>
-            <p className="text-sm font-bold text-darkBrown">
+            <p className="text-xs font-medium text-darkGreen-muted">Total Evaluations</p>
+            <p className="text-sm font-bold text-darkGreen">
               {loading ? "..." : `${analyses.length} Records`}
             </p>
           </div>
@@ -152,12 +152,12 @@ export default function DashboardPage() {
 
         {/* Latest Evaluation */}
         <Card className="p-4 bg-white border-lightBorder shadow-subtle flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-warmWhite border border-lightBorder text-beigeAccent flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-softBg border border-lightBorder text-sageAccent flex items-center justify-center">
             <CheckCircle2 className="w-5 h-5" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-medium text-darkBrown-muted">Latest Result</p>
-            <p className="text-sm font-bold text-darkBrown truncate">
+            <p className="text-xs font-medium text-darkGreen-muted">Latest Result</p>
+            <p className="text-sm font-bold text-darkGreen truncate">
               {latestAnalysis ? latestAnalysis.predicted_grade_label : "None Yet"}
             </p>
           </div>
@@ -165,12 +165,12 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Action Card (No Gradients) */}
-      <Card className="p-6 bg-white border border-lightBorder text-darkBrown flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-subtle">
+      <Card className="p-6 bg-white border border-lightBorder text-darkGreen flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-subtle">
         <div className="space-y-1">
-          <h2 className="text-lg font-bold text-darkBrown">
+          <h2 className="text-lg font-bold text-darkGreen">
             Analyze Knee Radiograph
           </h2>
-          <p className="text-xs text-darkBrown-muted">
+          <p className="text-xs text-darkGreen-muted">
             Upload a frontal knee X-ray to predict Kellgren–Lawrence severity and generate Grad-CAM heatmaps.
           </p>
         </div>
@@ -195,7 +195,7 @@ export default function DashboardPage() {
           action={
             <Link
               href="/dashboard/history"
-              className="text-xs font-semibold text-beigeAccent hover:text-beigeAccent-hover flex items-center gap-1"
+              className="text-xs font-semibold text-sageAccent hover:text-sageAccent-hover flex items-center gap-1"
             >
               View All <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -203,16 +203,16 @@ export default function DashboardPage() {
         />
         <CardContent>
           {loading ? (
-            <div className="text-center py-8 text-xs text-darkBrown-muted">
+            <div className="text-center py-8 text-xs text-darkGreen-muted">
               Loading recent evaluations...
             </div>
           ) : analyses.length === 0 ? (
             <div className="text-center py-10 px-4">
-              <div className="w-10 h-10 rounded-full bg-warmWhite border border-lightBorder text-beigeAccent flex items-center justify-center mx-auto mb-2">
+              <div className="w-10 h-10 rounded-full bg-softBg border border-lightBorder text-sageAccent flex items-center justify-center mx-auto mb-2">
                 <Clock className="w-5 h-5" />
               </div>
-              <p className="text-xs font-semibold text-darkBrown">No analyses performed yet</p>
-              <p className="text-[11px] text-darkBrown-muted mt-1 mb-3">
+              <p className="text-xs font-semibold text-darkGreen">No analyses performed yet</p>
+              <p className="text-[11px] text-darkGreen-muted mt-1 mb-3">
                 Upload your first knee radiograph to view automated grading and Grad-CAM explainability.
               </p>
               <Button variant="primary" size="sm" href="/dashboard/analysis">
@@ -224,13 +224,13 @@ export default function DashboardPage() {
               {analyses.slice(0, 5).map((rec) => (
                 <div
                   key={rec.id}
-                  className="py-3.5 flex items-center justify-between gap-3 hover:bg-warmWhite/60 px-2 rounded-lg transition"
+                  className="py-3.5 flex items-center justify-between gap-3 hover:bg-lightSage/20 px-2 rounded-lg transition"
                 >
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-darkBrown truncate">
+                    <p className="text-xs font-bold text-darkGreen truncate">
                       {rec.filename}
                     </p>
-                    <p className="text-[11px] text-darkBrown-muted mt-0.5">
+                    <p className="text-[11px] text-darkGreen-muted mt-0.5">
                       {new Date(rec.created_at).toLocaleDateString()} • {(rec.confidence * 100).toFixed(1)}% confidence
                     </p>
                   </div>
@@ -240,7 +240,7 @@ export default function DashboardPage() {
                     </Badge>
                     <Link
                       href="/dashboard/history"
-                      className="text-xs text-beigeAccent hover:text-beigeAccent-hover font-medium"
+                      className="text-xs text-sageAccent hover:text-sageAccent-hover font-medium"
                     >
                       Details →
                     </Link>

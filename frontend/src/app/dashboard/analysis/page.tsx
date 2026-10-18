@@ -191,7 +191,7 @@ export default function AnalysisPage() {
     const pageWidth = doc.internal.pageSize.getWidth();
 
     // Header
-    doc.setFillColor(22, 50, 79); // Deep Navy
+    doc.setFillColor(41, 69, 54); // Dark Green #294536
     doc.rect(0, 0, pageWidth, 26, "F");
 
     doc.setTextColor(255, 255, 255);
@@ -204,30 +204,30 @@ export default function AnalysisPage() {
     doc.text("Kellgren-Lawrence Grading with Grad-CAM Explainability", 14, 21);
 
     // Metadata section
-    doc.setTextColor(22, 50, 79);
+    doc.setTextColor(41, 69, 54);
     doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
     doc.text("Analysis Dossier", 14, 36);
 
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(70, 80, 95);
+    doc.setTextColor(104, 130, 115);
     doc.text(`Analysis ID: ${result.analysis_id}`, 14, 43);
     doc.text(`Timestamp: ${new Date(result.timestamp).toUTCString()}`, 14, 49);
     doc.text(`Model: ${result.model_name} (v${result.model_version})`, 14, 55);
     doc.text(`Inference Latency: ${result.inference_time_ms.toFixed(1)} ms`, 14, 61);
 
     // Result summary
-    doc.setFillColor(244, 247, 248);
+    doc.setFillColor(245, 248, 244);
     doc.roundedRect(14, 68, pageWidth - 28, 28, 3, 3, "F");
 
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(22, 50, 79);
+    doc.setTextColor(41, 69, 54);
     doc.text("Predicted Severity Staging:", 20, 78);
 
     doc.setFontSize(13);
-    doc.setTextColor(77, 150, 144);
+    doc.setTextColor(107, 148, 117); // Sage Green Accent #6B9475
     doc.text(
       `${result.predicted_grade} — ${result.severity_label} (${(
         result.confidence * 100
@@ -239,19 +239,19 @@ export default function AnalysisPage() {
     // Probability Table
     doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(22, 50, 79);
+    doc.setTextColor(41, 69, 54);
     doc.text("5-Class Probability Distribution", 14, 108);
 
     let yPos = 116;
     result.probabilities.forEach((p) => {
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
-      doc.setTextColor(70, 80, 95);
+      doc.setTextColor(104, 130, 115);
       doc.text(p.label, 14, yPos);
       doc.text(`${(p.probability * 100).toFixed(2)}%`, 140, yPos);
 
       // Draw progress line
-      doc.setDrawColor(226, 232, 240);
+      doc.setDrawColor(225, 233, 223);
       doc.line(14, yPos + 2, pageWidth - 14, yPos + 2);
       yPos += 8;
     });
@@ -272,13 +272,13 @@ export default function AnalysisPage() {
       {/* Page Title */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-lightBorder pb-6">
         <div>
-          <span className="text-xs font-semibold text-beigeAccent uppercase tracking-wider">
+          <span className="text-xs font-semibold text-sageAccent uppercase tracking-wider">
             Inference & Explainability
           </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-darkBrown mt-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-darkGreen mt-1">
             New Knee Radiograph Analysis
           </h1>
-          <p className="text-xs text-darkBrown-muted mt-1">
+          <p className="text-xs text-darkGreen-muted mt-1">
             Upload an anteroposterior radiograph to compute KL grade and Grad-CAM attention heatmaps
           </p>
         </div>
@@ -296,10 +296,10 @@ export default function AnalysisPage() {
       </div>
 
       {/* Medical research advisory notice */}
-      <div className="p-3.5 rounded-xl bg-warmWhite border border-lightBorder flex items-start gap-3">
-        <Info className="w-4 h-4 text-beigeAccent shrink-0 mt-0.5" />
-        <p className="text-xs text-darkBrown-muted leading-relaxed">
-          <strong className="text-darkBrown">Academic Decision Support:</strong> This system evaluates radiograph features using deep learning for educational research. Predictions and Grad-CAM activations do not replace certified radiological examination.
+      <div className="p-3.5 rounded-xl bg-softBg border border-lightBorder flex items-start gap-3">
+        <Info className="w-4 h-4 text-sageAccent shrink-0 mt-0.5" />
+        <p className="text-xs text-darkGreen-muted leading-relaxed">
+          <strong className="text-darkGreen">Academic Decision Support:</strong> This system evaluates radiograph features using deep learning for educational research. Predictions and Grad-CAM activations do not replace certified radiological examination.
         </p>
       </div>
 
@@ -326,8 +326,8 @@ export default function AnalysisPage() {
                 onClick={() => !file && fileInputRef.current?.click()}
                 className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${
                   file
-                    ? "border-beigeAccent bg-warmWhite/50"
-                    : "border-lightBorder hover:border-beigeAccent hover:bg-warmWhite/30 cursor-pointer"
+                    ? "border-sageAccent bg-lightSage/20"
+                    : "border-lightBorder hover:border-sageAccent hover:bg-lightSage/10 cursor-pointer"
                 }`}
               >
                 <input
@@ -344,18 +344,18 @@ export default function AnalysisPage() {
 
                 {!file ? (
                   <div className="space-y-4">
-                    <div className="w-14 h-14 rounded-full bg-warmWhite border border-lightBorder text-beigeAccent flex items-center justify-center mx-auto shadow-subtle">
+                    <div className="w-14 h-14 rounded-full bg-softBg border border-lightBorder text-sageAccent flex items-center justify-center mx-auto shadow-subtle">
                       <Upload className="w-7 h-7" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-darkBrown">
+                      <p className="text-sm font-bold text-darkGreen">
                         Drag & Drop Knee Radiograph Here
                       </p>
-                      <p className="text-xs text-darkBrown-muted mt-1">
+                      <p className="text-xs text-darkGreen-muted mt-1">
                         or click to browse files from your computer
                       </p>
                     </div>
-                    <div className="flex justify-center gap-2 text-[11px] text-darkBrown-muted">
+                    <div className="flex justify-center gap-2 text-[11px] text-darkGreen-muted">
                       <span>Supported: PNG, JPEG, TIFF</span>
                       <span>•</span>
                       <span>Max file size: 10 MB</span>
@@ -374,10 +374,10 @@ export default function AnalysisPage() {
                       </div>
                     )}
                     <div>
-                      <p className="text-sm font-bold text-darkBrown truncate">
+                      <p className="text-sm font-bold text-darkGreen truncate">
                         {file.name}
                       </p>
-                      <p className="text-xs text-darkBrown-muted">
+                      <p className="text-xs text-darkGreen-muted">
                         {(file.size / (1024 * 1024)).toFixed(2)} MB • {file.type}
                       </p>
                     </div>
@@ -414,13 +414,13 @@ export default function AnalysisPage() {
                     type="checkbox"
                     checked={applyClahe}
                     onChange={(e) => setApplyClahe(e.target.checked)}
-                    className="rounded text-beigeAccent focus:ring-beigeAccent border-lightBorder h-4 w-4"
+                    className="rounded text-sageAccent focus:ring-sageAccent border-lightBorder h-4 w-4"
                   />
                   <div>
-                    <span className="text-xs font-bold text-darkBrown block">
+                    <span className="text-xs font-bold text-darkGreen block">
                       Apply CLAHE Preprocessing
                     </span>
-                    <span className="text-[11px] text-darkBrown-muted block">
+                    <span className="text-[11px] text-darkGreen-muted block">
                       Enhances trabecular bone & subchondral contrast
                     </span>
                   </div>
@@ -440,13 +440,13 @@ export default function AnalysisPage() {
               {/* Progress bar during analysis */}
               {isUploading && (
                 <div className="mt-4 space-y-1.5">
-                  <div className="flex justify-between text-xs text-darkBrown-muted">
+                  <div className="flex justify-between text-xs text-darkGreen-muted">
                     <span>Running MobileNetV2 inference & Grad-CAM...</span>
                     <span>{uploadProgress}%</span>
                   </div>
-                  <div className="w-full bg-softBeige/40 rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-lightSage/40 rounded-full h-2 overflow-hidden">
                     <div
-                      className="bg-beigeAccent h-2 rounded-full transition-all duration-300"
+                      className="bg-sageAccent h-2 rounded-full transition-all duration-300"
                       style={{ width: `${uploadProgress}%` }}
                     ></div>
                   </div>
@@ -462,26 +462,26 @@ export default function AnalysisPage() {
                 title="Radiograph Checklist"
                 subtitle="Ensure optimal accuracy for inference"
               />
-              <CardContent className="space-y-3 text-xs text-darkBrown-muted">
+              <CardContent className="space-y-3 text-xs text-darkGreen-muted">
                 <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-beigeAccent shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-4 h-4 text-sageAccent shrink-0 mt-0.5" />
                   <span>Weight-bearing Anteroposterior (AP) or Posteroanterior (PA) view.</span>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-beigeAccent shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-4 h-4 text-sageAccent shrink-0 mt-0.5" />
                   <span>Tibiofemoral joint space clearly centered without metal occlusion.</span>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-beigeAccent shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-4 h-4 text-sageAccent shrink-0 mt-0.5" />
                   <span>Image free from major motion blur or excessive magnification artifacts.</span>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="p-4 bg-warmWhite border border-lightBorder text-xs text-darkBrown-muted space-y-2">
-              <span className="font-bold text-darkBrown block">KL Scale Reminder</span>
+            <Card className="p-4 bg-softBg border border-lightBorder text-xs text-darkGreen-muted space-y-2">
+              <span className="font-bold text-darkGreen block">KL Scale Reminder</span>
               <p>
-                <strong className="text-darkBrown">Grade 0:</strong> Normal • <strong className="text-darkBrown">Grade 1:</strong> Doubtful • <strong className="text-darkBrown">Grade 2:</strong> Mild • <strong className="text-darkBrown">Grade 3:</strong> Moderate • <strong className="text-darkBrown">Grade 4:</strong> Severe
+                <strong className="text-darkGreen">Grade 0:</strong> Normal • <strong className="text-darkGreen">Grade 1:</strong> Doubtful • <strong className="text-darkGreen">Grade 2:</strong> Mild • <strong className="text-darkGreen">Grade 3:</strong> Moderate • <strong className="text-darkGreen">Grade 4:</strong> Severe
               </p>
             </Card>
           </div>
@@ -503,38 +503,38 @@ export default function AnalysisPage() {
                   >
                     {result.predicted_grade} — {result.severity_label}
                   </Badge>
-                  <span className="text-xs text-darkBrown-muted">
-                    Analysis ID: <code className="font-mono text-darkBrown-light">{result.analysis_id.substring(0, 12)}...</code>
+                  <span className="text-xs text-darkGreen-muted">
+                    Analysis ID: <code className="font-mono text-darkGreen-light">{result.analysis_id.substring(0, 12)}...</code>
                   </span>
                 </div>
 
-                <h2 className="text-2xl font-bold text-darkBrown">
+                <h2 className="text-2xl font-bold text-darkGreen">
                   {KL_GRADE_DETAILS[result.predicted_class]?.label}:{" "}
                   {KL_GRADE_DETAILS[result.predicted_class]?.severity}
                 </h2>
 
-                <p className="text-xs sm:text-sm text-darkBrown-muted leading-relaxed">
+                <p className="text-xs sm:text-sm text-darkGreen-muted leading-relaxed">
                   {KL_GRADE_DETAILS[result.predicted_class]?.description}
                 </p>
 
-                <div className="flex flex-wrap gap-4 pt-2 text-xs text-darkBrown-muted">
-                  <span><strong className="text-darkBrown">Model:</strong> {result.model_name} (v{result.model_version})</span>
+                <div className="flex flex-wrap gap-4 pt-2 text-xs text-darkGreen-muted">
+                  <span><strong className="text-darkGreen">Model:</strong> {result.model_name} (v{result.model_version})</span>
                   <span>•</span>
-                  <span><strong className="text-darkBrown">Latency:</strong> {result.inference_time_ms.toFixed(1)} ms</span>
+                  <span><strong className="text-darkGreen">Latency:</strong> {result.inference_time_ms.toFixed(1)} ms</span>
                   <span>•</span>
-                  <span><strong className="text-darkBrown">Confidence:</strong> {(result.confidence * 100).toFixed(1)}%</span>
+                  <span><strong className="text-darkGreen">Confidence:</strong> {(result.confidence * 100).toFixed(1)}%</span>
                 </div>
               </div>
 
               <div className="md:col-span-4 text-center md:text-right border-t md:border-t-0 md:border-l border-lightBorder pt-4 md:pt-0 md:pl-6">
-                <div className="inline-block text-center p-4 rounded-xl bg-warmWhite border border-lightBorder">
-                  <span className="text-xs font-semibold text-darkBrown-muted block">
+                <div className="inline-block text-center p-4 rounded-xl bg-softBg border border-lightBorder">
+                  <span className="text-xs font-semibold text-darkGreen-muted block">
                     Confidence Score
                   </span>
-                  <span className="text-3xl font-black text-beigeAccent block mt-1">
+                  <span className="text-3xl font-black text-sageAccent block mt-1">
                     {(result.confidence * 100).toFixed(1)}%
                   </span>
-                  <span className="text-[10px] text-darkBrown-muted block mt-1">
+                  <span className="text-[10px] text-darkGreen-muted block mt-1">
                     Highest Softmax Logit
                   </span>
                 </div>
@@ -549,19 +549,19 @@ export default function AnalysisPage() {
                 {/* Visualizer controls */}
                 <div className="flex items-center justify-between pb-3 border-b border-lightBorder mb-3">
                   <div className="flex items-center gap-2">
-                    <Eye className="w-4 h-4 text-beigeAccent" />
-                    <span className="text-xs font-bold text-darkBrown">
+                    <Eye className="w-4 h-4 text-sageAccent" />
+                    <span className="text-xs font-bold text-darkGreen">
                       Explainability Visualization
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1 bg-warmWhite border border-lightBorder p-1 rounded-lg text-xs font-medium">
+                  <div className="flex items-center gap-1 bg-lightSage/30 border border-lightBorder p-1 rounded-lg text-xs font-medium">
                     <button
                       onClick={() => setActiveImageView("side-by-side")}
                       className={`px-2.5 py-1 rounded-md transition-all ${
                         activeImageView === "side-by-side"
-                          ? "bg-white text-darkBrown shadow-subtle border border-lightBorder/60 font-semibold"
-                          : "text-darkBrown-muted hover:text-darkBrown"
+                          ? "bg-white text-darkGreen shadow-subtle border border-lightBorder/60 font-semibold"
+                          : "text-darkGreen-muted hover:text-darkGreen"
                       }`}
                     >
                       Side by Side
@@ -570,8 +570,8 @@ export default function AnalysisPage() {
                       onClick={() => setActiveImageView("overlay")}
                       className={`px-2.5 py-1 rounded-md transition-all ${
                         activeImageView === "overlay"
-                          ? "bg-white text-darkBrown shadow-subtle border border-lightBorder/60 font-semibold"
-                          : "text-darkBrown-muted hover:text-darkBrown"
+                          ? "bg-white text-darkGreen shadow-subtle border border-lightBorder/60 font-semibold"
+                          : "text-darkGreen-muted hover:text-darkGreen"
                       }`}
                     >
                       Overlay
@@ -580,8 +580,8 @@ export default function AnalysisPage() {
                       onClick={() => setActiveImageView("heatmap")}
                       className={`px-2.5 py-1 rounded-md transition-all ${
                         activeImageView === "heatmap"
-                          ? "bg-white text-darkBrown shadow-subtle border border-lightBorder/60 font-semibold"
-                          : "text-darkBrown-muted hover:text-darkBrown"
+                          ? "bg-white text-darkGreen shadow-subtle border border-lightBorder/60 font-semibold"
+                          : "text-darkGreen-muted hover:text-darkGreen"
                       }`}
                     >
                       Heatmap
@@ -590,8 +590,8 @@ export default function AnalysisPage() {
                       onClick={() => setActiveImageView("original")}
                       className={`px-2.5 py-1 rounded-md transition-all ${
                         activeImageView === "original"
-                          ? "bg-white text-darkBrown shadow-subtle border border-lightBorder/60 font-semibold"
-                          : "text-darkBrown-muted hover:text-darkBrown"
+                          ? "bg-white text-darkGreen shadow-subtle border border-lightBorder/60 font-semibold"
+                          : "text-darkGreen-muted hover:text-darkGreen"
                       }`}
                     >
                       Original
@@ -603,7 +603,7 @@ export default function AnalysisPage() {
                 {activeImageView === "side-by-side" && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <span className="text-[11px] font-bold text-darkBrown-muted uppercase tracking-wider block">
+                      <span className="text-[11px] font-bold text-darkGreen-muted uppercase tracking-wider block">
                         Original Radiograph
                       </span>
                       <div className="aspect-square rounded-lg overflow-hidden bg-black border border-lightBorder flex items-center justify-center">
@@ -617,7 +617,7 @@ export default function AnalysisPage() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <span className="text-[11px] font-bold text-beigeAccent uppercase tracking-wider block">
+                      <span className="text-[11px] font-bold text-sageAccent uppercase tracking-wider block">
                         Grad-CAM Attention Overlay
                       </span>
                       <div className="aspect-square rounded-lg overflow-hidden bg-black border border-lightBorder flex items-center justify-center">
@@ -666,9 +666,9 @@ export default function AnalysisPage() {
                 )}
 
                 {/* Explainability Interpretation Footer */}
-                <div className="mt-4 p-3 bg-warmWhite rounded-lg border border-lightBorder text-xs text-darkBrown-muted leading-relaxed">
-                  <strong className="text-darkBrown block mb-0.5">What this Grad-CAM heatmap shows:</strong>
-                  The colored regions indicate areas in the convolutional feature maps that contributed positively toward the predicted <strong className="text-darkBrown">{result.predicted_grade}</strong> class. Warm zones (red/orange) represent the highest activation weights, typically corresponding to joint-space narrowing, marginal osteophytic spurs, or subchondral sclerosis.
+                <div className="mt-4 p-3 bg-softBg rounded-lg border border-lightBorder text-xs text-darkGreen-muted leading-relaxed">
+                  <strong className="text-darkGreen block mb-0.5">What this Grad-CAM heatmap shows:</strong>
+                  The colored regions indicate areas in the convolutional feature maps that contributed positively toward the predicted <strong className="text-darkGreen">{result.predicted_grade}</strong> class. Warm zones (red/orange) represent the highest activation weights, typically corresponding to joint-space narrowing, marginal osteophytic spurs, or subchondral sclerosis.
                 </div>
               </Card>
             </div>
@@ -691,24 +691,24 @@ export default function AnalysisPage() {
                         <div className="flex items-center justify-between text-xs">
                           <span
                             className={`font-semibold ${
-                              isWinner ? "text-darkBrown font-bold" : "text-darkBrown-muted"
+                              isWinner ? "text-darkGreen font-bold" : "text-darkGreen-muted"
                             }`}
                           >
                             {item.label} ({gradeDetail?.severity})
                           </span>
                           <span
                             className={`font-mono text-xs ${
-                              isWinner ? "text-beigeAccent font-bold" : "text-darkBrown-muted"
+                              isWinner ? "text-sageAccent font-bold" : "text-darkGreen-muted"
                             }`}
                           >
                             {pct}%
                           </span>
                         </div>
 
-                        <div className="w-full bg-softBeige/40 rounded-full h-3 overflow-hidden">
+                        <div className="w-full bg-lightSage/40 rounded-full h-3 overflow-hidden">
                           <div
                             className={`h-3 rounded-full transition-all duration-500 ${
-                              isWinner ? "bg-beigeAccent" : "bg-softBeige"
+                              isWinner ? "bg-sageAccent" : "bg-lightSage"
                             }`}
                             style={{ width: `${pct}%` }}
                           ></div>

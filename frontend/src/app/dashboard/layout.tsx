@@ -22,10 +22,10 @@ export default function DashboardLayout({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-warmWhite flex items-center justify-center">
+      <div className="min-h-screen bg-softBg flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 text-beigeAccent animate-spin" />
-          <p className="text-xs font-semibold text-darkBrown">Verifying session credentials...</p>
+          <Loader2 className="w-8 h-8 text-sageAccent animate-spin" />
+          <p className="text-xs font-semibold text-darkGreen">Verifying session credentials...</p>
         </div>
       </div>
     );
@@ -36,7 +36,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-warmWhite flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-softBg flex flex-col lg:flex-row">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">

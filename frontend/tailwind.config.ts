@@ -9,60 +9,75 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Minimal Warm White & Beige Palette
-        warmWhite: "#FAF7F2",
-        softBeige: "#E9DED1",
+        // Minimal Sage Green & White Palette
+        softBg: "#F5F8F4",
+        lightSage: "#D5E5D5",
+        sageAccent: {
+          DEFAULT: "#6B9475",
+          hover: "#5B8265",
+          light: "#EBF2EB",
+        },
+        darkGreen: {
+          DEFAULT: "#294536",
+          light: "#3E614D",
+          muted: "#688273",
+        },
+        lightBorder: "#E1E9DF",
+
+        // Compatibility Aliases to ensure complete coverage
+        warmWhite: "#F5F8F4",
+        softBeige: "#D5E5D5",
         beigeAccent: {
-          DEFAULT: "#B49A83",
-          hover: "#A3876F",
-          light: "#F3EEE8",
+          DEFAULT: "#6B9475",
+          hover: "#5B8265",
+          light: "#EBF2EB",
         },
         darkBrown: {
-          DEFAULT: "#40362F",
-          light: "#63564D",
-          muted: "#8C7C70",
+          DEFAULT: "#294536",
+          light: "#3E614D",
+          muted: "#688273",
         },
-        lightBorder: "#E8E1D9",
 
         // Palette Aliases for Consistent System Theming
         surface: {
-          offwhite: "#FAF7F2",
+          offwhite: "#F5F8F4",
+          bg: "#F5F8F4",
           white: "#FFFFFF",
           card: "#FFFFFF",
-          border: "#E8E1D9",
+          border: "#E1E9DF",
         },
         navy: {
-          900: "#40362F",
-          800: "#40362F", // Dark brown primary text
-          700: "#54473F",
-          600: "#695A50",
-          100: "#E9DED1",
-          50: "#FAF7F2",
+          900: "#294536",
+          800: "#294536",
+          700: "#3E614D",
+          600: "#4D735D",
+          100: "#D5E5D5",
+          50: "#F5F8F4",
         },
         medBlue: {
-          800: "#40362F",
-          700: "#B49A83",
-          600: "#B49A83",
-          100: "#E9DED1",
-          50: "#FAF7F2",
+          800: "#294536",
+          700: "#6B9475",
+          600: "#6B9475",
+          100: "#D5E5D5",
+          50: "#F5F8F4",
         },
         teal: {
-          800: "#8C735D",
-          700: "#A3876F",
-          600: "#B49A83", // Beige accent primary
-          500: "#C4AD98",
-          200: "#E9DED1",
-          100: "#F3EEE8",
-          50: "#FAF7F2",
+          800: "#3E614D",
+          700: "#5B8265",
+          600: "#6B9475",
+          500: "#7DA487",
+          200: "#D5E5D5",
+          100: "#EBF2EB",
+          50: "#F5F8F4",
         },
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "-apple-system", "sans-serif"],
       },
       boxShadow: {
-        subtle: "0 1px 3px 0 rgba(64, 54, 47, 0.04), 0 1px 2px 0 rgba(64, 54, 47, 0.02)",
-        card: "0 4px 6px -1px rgba(64, 54, 47, 0.05), 0 2px 4px -1px rgba(64, 54, 47, 0.02)",
-        elevated: "0 10px 15px -3px rgba(64, 54, 47, 0.06), 0 4px 6px -2px rgba(64, 54, 47, 0.03)",
+        subtle: "0 1px 3px 0 rgba(41, 69, 54, 0.04), 0 1px 2px 0 rgba(41, 69, 54, 0.02)",
+        card: "0 4px 6px -1px rgba(41, 69, 54, 0.05), 0 2px 4px -1px rgba(41, 69, 54, 0.02)",
+        elevated: "0 10px 15px -3px rgba(41, 69, 54, 0.06), 0 4px 6px -2px rgba(41, 69, 54, 0.03)",
       },
     },
   },

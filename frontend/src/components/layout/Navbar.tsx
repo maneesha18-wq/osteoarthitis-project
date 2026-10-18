@@ -22,14 +22,14 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-lg bg-warmWhite border border-lightBorder flex items-center justify-center text-beigeAccent shadow-subtle transition-transform duration-200 group-hover:scale-105">
+            <div className="w-10 h-10 rounded-lg bg-softBg border border-lightBorder flex items-center justify-center text-sageAccent shadow-subtle transition-transform duration-200 group-hover:scale-105">
               <Activity className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-xl tracking-tight text-darkBrown">
-                Knee<span className="text-beigeAccent">AI</span>
+              <span className="font-bold text-xl tracking-tight text-darkGreen">
+                Knee<span className="text-sageAccent">AI</span>
               </span>
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-darkBrown-muted -mt-1">
+              <span className="text-[10px] uppercase tracking-wider font-semibold text-darkGreen-muted -mt-1">
                 Deep Learning Decision Support
               </span>
             </div>
@@ -41,7 +41,7 @@ export const Navbar: React.FC = () => {
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-sm font-medium text-darkBrown-muted hover:text-darkBrown transition-colors"
+                className="text-sm font-medium text-darkGreen-muted hover:text-darkGreen transition-colors"
               >
                 {link.label}
               </Link>
@@ -62,7 +62,7 @@ export const Navbar: React.FC = () => {
           <div className="flex md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-600 hover:text-navy-800 hover:bg-slate-100 focus:outline-none"
+              className="p-2 rounded-lg text-darkGreen-muted hover:text-darkGreen hover:bg-lightSage/20 focus:outline-none"
               aria-label="Toggle navigation menu"
             >
               {isMobileMenuOpen ? (
@@ -77,20 +77,20 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Drawer */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-b border-slate-200 bg-white px-4 pt-3 pb-6 space-y-3">
+        <div className="md:hidden border-b border-lightBorder bg-white px-4 pt-3 pb-6 space-y-3">
           <div className="flex flex-col space-y-2">
             {navLinks.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-navy-800 rounded-md"
+                className="px-3 py-2 text-sm font-medium text-darkGreen-muted hover:bg-lightSage/20 hover:text-darkGreen rounded-md"
               >
                 {link.label}
               </Link>
             ))}
           </div>
-          <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
+          <div className="pt-3 border-t border-lightBorder flex flex-col gap-2">
             <Button
               variant="outline"
               size="md"

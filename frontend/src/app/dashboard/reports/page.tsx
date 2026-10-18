@@ -39,7 +39,7 @@ export default function ReportsPage() {
     const pageWidth = doc.internal.pageSize.getWidth();
 
     // Top Header
-    doc.setFillColor(22, 50, 79); // Deep Navy
+    doc.setFillColor(41, 69, 54); // Dark Green #294536
     doc.rect(0, 0, pageWidth, 26, "F");
 
     doc.setTextColor(255, 255, 255);
@@ -52,14 +52,14 @@ export default function ReportsPage() {
     doc.text("Kellgren-Lawrence Grading with Grad-CAM Explainability", 14, 21);
 
     // Metadata section
-    doc.setTextColor(22, 50, 79);
+    doc.setTextColor(41, 69, 54);
     doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
     doc.text("Analysis Dossier", 14, 36);
 
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(70, 80, 95);
+    doc.setTextColor(104, 130, 115);
     doc.text(`Analysis ID: ${record.id}`, 14, 43);
     doc.text(`File Name: ${record.filename}`, 14, 49);
     doc.text(`Timestamp: ${new Date(record.created_at).toUTCString()}`, 14, 55);
@@ -67,39 +67,39 @@ export default function ReportsPage() {
     doc.text(`Inference Latency: ${record.inference_time_ms.toFixed(1)} ms`, 14, 67);
 
     // Staging Card
-    doc.setFillColor(244, 247, 248);
+    doc.setFillColor(245, 248, 244);
     doc.roundedRect(14, 74, pageWidth - 28, 28, 3, 3, "F");
 
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(22, 50, 79);
+    doc.setTextColor(41, 69, 54);
     doc.text("Predicted Severity Staging:", 20, 84);
 
     doc.setFontSize(13);
-    doc.setTextColor(77, 150, 144);
+    doc.setTextColor(107, 148, 117); // Sage Green Accent #6B9475
     doc.text(
       `${record.predicted_grade_label} — ${record.severity_label} (${(
         record.confidence * 100
       ).toFixed(1)}% Confidence)`,
       20,
-      92
+      85
     );
 
     // Probabilities
     doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(22, 50, 79);
+    doc.setTextColor(41, 69, 54);
     doc.text("5-Class Probability Distribution", 14, 114);
 
     let yPos = 122;
     record.probabilities.forEach((p) => {
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
-      doc.setTextColor(70, 80, 95);
+      doc.setTextColor(104, 130, 115);
       doc.text(p.label, 14, yPos);
       doc.text(`${(p.probability * 100).toFixed(2)}%`, 140, yPos);
 
-      doc.setDrawColor(226, 232, 240);
+      doc.setDrawColor(225, 233, 223);
       doc.line(14, yPos + 2, pageWidth - 14, yPos + 2);
       yPos += 8;
     });
@@ -119,13 +119,13 @@ export default function ReportsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-lightBorder pb-6">
         <div>
-          <span className="text-xs font-semibold text-beigeAccent uppercase tracking-wider">
+          <span className="text-xs font-semibold text-sageAccent uppercase tracking-wider">
             Clinical Documentation
           </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-darkBrown mt-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-darkGreen mt-1">
             Clinical & Research Reports
           </h1>
-          <p className="text-xs text-darkBrown-muted mt-1">
+          <p className="text-xs text-darkGreen-muted mt-1">
             Download timestamped PDF evaluation dossiers with 5-class distributions and metadata
           </p>
         </div>
@@ -137,18 +137,18 @@ export default function ReportsPage() {
       <Card className="bg-white border-lightBorder shadow-subtle">
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="p-12 text-center text-xs text-darkBrown-muted">
+            <div className="p-12 text-center text-xs text-darkGreen-muted">
               Loading available reports...
             </div>
           ) : analyses.length === 0 ? (
             <div className="text-center py-16 px-4">
-              <div className="w-12 h-12 rounded-full bg-warmWhite border border-lightBorder text-beigeAccent flex items-center justify-center mx-auto mb-3">
+              <div className="w-12 h-12 rounded-full bg-softBg border border-lightBorder text-sageAccent flex items-center justify-center mx-auto mb-3">
                 <FileCheck className="w-6 h-6" />
               </div>
-              <h4 className="text-sm font-bold text-darkBrown">
+              <h4 className="text-sm font-bold text-darkGreen">
                 No Reports Generated Yet
               </h4>
-              <p className="text-xs text-darkBrown-muted max-w-sm mx-auto mt-1 mb-4">
+              <p className="text-xs text-darkGreen-muted max-w-sm mx-auto mt-1 mb-4">
                 When an X-ray is analyzed on the New Analysis page, you can generate and download a comprehensive clinical PDF summary report.
               </p>
               <Button variant="outline" size="sm" href="/dashboard/analysis">
@@ -160,19 +160,19 @@ export default function ReportsPage() {
               {analyses.map((record) => (
                 <div
                   key={record.id}
-                  className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-warmWhite/60 transition-colors"
+                  className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-lightSage/20 transition-colors"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-darkBrown">
+                      <span className="font-bold text-sm text-darkGreen">
                         {record.filename}
                       </span>
                       <Badge variant={getGradeBadgeVariant(record.predicted_grade)}>
                         {record.predicted_grade_label} ({record.severity_label})
                       </Badge>
                     </div>
-                    <div className="flex flex-wrap gap-3 text-xs text-darkBrown-muted">
-                      <span>ID: <code className="font-mono text-darkBrown-light">{record.id.substring(0, 8)}...</code></span>
+                    <div className="flex flex-wrap gap-3 text-xs text-darkGreen-muted">
+                      <span>ID: <code className="font-mono text-darkGreen-light">{record.id.substring(0, 8)}...</code></span>
                       <span>•</span>
                       <span>Confidence: {(record.confidence * 100).toFixed(1)}%</span>
                       <span>•</span>
