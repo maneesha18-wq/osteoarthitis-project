@@ -1,0 +1,102 @@
+# KneeAI Development Progress Checklist
+
+**Project Title:** Explainable Knee Osteoarthritis Grade Classification Using Deep Learning  
+**Project Lead:** Data Science Major Project Team  
+**Architecture:** Next.js (App Router, Tailwind CSS, TypeScript) + FastAPI (TensorFlow/Keras, Grad-CAM, OpenCV) + Supabase (Auth & PostgreSQL RLS)
+
+---
+
+## Progress Overview
+
+| Phase | Description | Status | Verification & Test Notes | Commit Hash |
+| :--- | :--- | :--- | :--- | :--- |
+| **Phase 1** | Inspect & Initialize Monorepo | IN_PROGRESS | Monorepo structure, Git setup, `.gitignore`, `.env.example`, runner | Pending |
+| **Phase 2** | UI Foundation & Landing Page | PENDING | Tailwind color palette, medical design system, landing page | - |
+| **Phase 3** | Authentication & Dashboard | PENDING | Supabase Auth, login/register/reset, protected routes, dashboard | - |
+| **Phase 4** | Dataset & ML Pipeline | PENDING | Dataset inspection, MobileNetV2, Baseline CNN, Grad-CAM module | - |
+| **Phase 5** | AI API (FastAPI) | PENDING | `/health`, `/ready`, `/predict`, schema validation, CORS | - |
+| **Phase 6** | Analysis UI & Explainability | PENDING | Drag-and-drop X-ray upload, prediction display, Grad-CAM view | - |
+| **Phase 7** | Database, History & Reports | PENDING | Supabase RLS schema, user history, PDF report export | - |
+| **Phase 8** | Quality Assurance & Testing | PENDING | Frontend unit/build tests, backend pytest, integration verification | - |
+| **Phase 9** | Documentation & Handover | PENDING | Comprehensive README, API docs, reproduction instructions | - |
+
+---
+
+## Detailed Phase Breakdown
+
+### Phase 1: Inspect & Initialize
+- [x] Workspace inspection & Git repository initialized
+- [x] `.gitignore` established with security and ML data exclusion rules
+- [x] `.env.example` created with frontend, backend, and Supabase keys
+- [x] Root `package.json` with unified `dev` orchestrator script
+- [x] Initial root README documentation
+- [ ] Phase 1 Git commit
+
+### Phase 2: UI Foundation
+- [ ] Next.js 14+ App Router project setup in `frontend/`
+- [ ] Tailwind CSS configuration with custom KneeAI medical palette:
+  - Deep Navy: `#16324F`
+  - Medical Blue: `#245B70`
+  - Muted Medical Teal: `#4D9690`
+  - Cool Off-White: `#F4F7F8`
+  - White: `#FFFFFF`
+- [ ] Responsive landing page matching medical research visual hierarchy
+- [ ] Workflow breakdown (5-step process) & KL Grade 0-4 guide cards
+- [ ] Medical disclaimer and ethical research statement
+- [ ] Phase 2 Git commit
+
+### Phase 3: Authentication & Dashboard
+- [ ] Supabase client and auth helpers in `frontend/src/lib/`
+- [ ] Sign Up, Sign In, Forgot Password, and Password Reset UI
+- [ ] Form validation and clear status messaging
+- [ ] Dashboard layout with persistent Deep Navy sidebar & Teal active indicator
+- [ ] Dashboard home with model status, quick action, and recent history cards
+- [ ] Phase 3 Git commit
+
+### Phase 4: Dataset & ML Pipeline
+- [ ] Dataset inspection script for Kaggle Knee OA dataset (9,786 images)
+- [ ] Reusable image preprocessing module (224x224, normalization, CLAHE option)
+- [ ] MobileNetV2 transfer learning training pipeline (5 KL grades)
+- [ ] Baseline CNN comparison model architecture
+- [ ] Grad-CAM explainability module generating heatmaps & overlays
+- [ ] Training, evaluation, and export scripts with metrics reporting
+- [ ] Phase 4 Git commit
+
+### Phase 5: AI API (FastAPI Backend)
+- [ ] FastAPI backend structure in `backend/`
+- [ ] Endpoints: `GET /health`, `GET /ready`, `POST /predict`
+- [ ] Pydantic request/response schemas
+- [ ] Image validation (format, size limit, channel verification)
+- [ ] Grad-CAM integration returning heatmap & overlay data
+- [ ] Unit tests for API endpoints using `pytest`
+- [ ] Phase 5 Git commit
+
+### Phase 6: Analysis UI & Explainability
+- [ ] Drag-and-drop X-ray upload component with image preview & metadata
+- [ ] Real-time client-side validation (max 10MB, JPG/PNG format)
+- [ ] Inference execution via FastAPI client
+- [ ] Prediction results card displaying predicted grade and clinical description
+- [ ] Five-class probability distribution chart (Recharts)
+- [ ] Side-by-side / toggle view of original X-ray, Grad-CAM heatmap, and overlay
+- [ ] Phase 6 Git commit
+
+### Phase 7: Database, History & Reports
+- [ ] Supabase SQL migration script for `analyses` and `profiles` tables with RLS
+- [ ] Analysis history view with filtering by date, grade, and status
+- [ ] Comprehensive PDF report generation (print / download)
+- [ ] User profile and settings management
+- [ ] Phase 7 Git commit
+
+### Phase 8: Quality Assurance
+- [ ] Frontend build and lint verification
+- [ ] Backend automated test suite
+- [ ] Error boundary and fallback handling (offline API, missing model, invalid file)
+- [ ] Mobile and desktop responsiveness audit
+- [ ] Phase 8 Git commit
+
+### Phase 9: Documentation & Deployment
+- [ ] Detailed project README with architecture diagrams
+- [ ] Dataset download and training instructions
+- [ ] FastAPI documentation (`/docs`)
+- [ ] Final verification summary and GitHub remote push guide
+- [ ] Final Git commit

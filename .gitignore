@@ -1,0 +1,58 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# Dependencies
+node_modules/
+backend/venv/
+.venv/
+venv/
+ENV/
+
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Next.js build
+frontend/.next/
+frontend/out/
+.next/
+out/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Machine Learning & Datasets (never commit raw datasets or huge model weights)
+ml/data/raw/
+ml/data/processed/
+ml/data/downloads/
+ml/data/kaggle/
+*.zip
+*.tar.gz
+*.h5
+*.keras
+*.pth
+*.pt
+ml/artifacts/weights/
+backend/app/models/*.h5
+backend/app/models/*.keras
+backend/app/models/*.pth
+
+# Logs & temp
+*.log
+scratch/
+temp/
+tmp/
