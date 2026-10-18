@@ -1,25 +1,47 @@
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
+import { createClient as createSupabaseClient, SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+export const getSupabaseUrl = (): string => {
+  return (process.env.NEXT_PUBLIC_SUPABASE_URL || "").trim();
+};
+
+export const getSupabaseKey = (): string => {
+  return (
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    ""
+  ).trim();
+};
 
 export const isSupabaseConfigured = (): boolean => {
+  const url = getSupabaseUrl();
+  const key = getSupabaseKey();
   return (
-    typeof supabaseUrl === "string" &&
-    supabaseUrl.trim().length > 0 &&
-    !supabaseUrl.includes("your-project-id") &&
-    typeof supabaseAnonKey === "string" &&
-    supabaseAnonKey.trim().length > 0 &&
-    !supabaseAnonKey.includes("your-anon-key")
+    url.length > 0 &&
+    !url.includes("your-project-id") &&
+    key.length > 0 &&
+    !key.includes("your-anon-key") &&
+    !key.includes("placeholder")
   );
 };
 
-export const supabase: SupabaseClient = isSupabaseConfigured()
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : (createClient(
+// Factory for client-side components using @supabase/ssr
+export const createClient = (): SupabaseClient => {
+  const url = getSupabaseUrl();
+  const key = getSupabaseKey();
+
+  if (!isSupabaseConfigured()) {
+    return createSupabaseClient(
       "https://placeholder-project.supabase.co",
       "placeholder-anon-key"
-    ) as SupabaseClient);
+    );
+  }
+
+  return createBrowserClient(url, key);
+};
+
+// Reusable singleton client for client-side hooks & services
+export const supabase: SupabaseClient = createClient();
 
 export interface AnalysisRecord {
   id: string;
@@ -46,8 +68,11 @@ export interface AnalysisRecord {
 
 const LOCAL_STORAGE_KEY = "kneeai_local_analyses";
 
-export async function saveAnalysis(record: AnalysisRecord, userId?: string): Promise<{ success: boolean; error?: string }> {
-  // If Supabase is configured and user is authenticated, save to database
+export async function saveAnalysis(
+  record: AnalysisRecord,
+  userId?: string
+): Promise<{ success: boolean; error?: string }> {
+  // If Supabase is configured and user is authenticated, attempt database persistence
   if (isSupabaseConfigured() && userId) {
     try {
       const { error } = await supabase.from("analyses").insert([
@@ -71,12 +96,15 @@ export async function saveAnalysis(record: AnalysisRecord, userId?: string): Pro
       ]);
 
       if (error) {
-        console.warn("Supabase insert error, falling back to local session store:", error.message);
+        console.warn(
+          "Supabase insert error (table may need schema migration), caching locally:",
+          error.message
+        );
       } else {
         return { success: true };
       }
     } catch (err: unknown) {
-      console.warn("Supabase connection failed, using local storage:", err);
+      console.warn("Supabase connection issue, using local storage:", err);
     }
   }
 
@@ -105,7 +133,7 @@ export async function fetchAnalyses(userId?: string): Promise<AnalysisRecord[]> 
         .eq("user_id", userId)
         .order("created_at", { ascending: false });
 
-      if (!error && data) {
+      if (!error && data && data.length > 0) {
         return data as AnalysisRecord[];
       }
     } catch (err) {
