@@ -50,6 +50,23 @@ interface PredictionResponse {
   interpretation_notes?: string;
 }
 
+// Helper to reliably resolve inference backend endpoint in both local and cloud deployments
+function resolveApiUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_API_URL;
+  if (configured && !configured.includes("localhost") && !configured.includes("127.0.0.1")) {
+    return configured.replace(/\/+$/, "");
+  }
+
+  // When running in a browser on any public domain (e.g. Render, Vercel), route directly to Render backend
+  if (typeof window !== "undefined") {
+    if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+      return "https://kneeai-backend.onrender.com";
+    }
+  }
+
+  return (configured || "http://localhost:8000").replace(/\/+$/, "");
+}
+
 export default function AnalysisPage() {
   const { user } = useAuth();
   const [file, setFile] = useState<File | null>(null);
@@ -67,8 +84,7 @@ export default function AnalysisPage() {
 
   // Eagerly wake up backend container upon entering analysis interface
   useEffect(() => {
-    const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-    const apiUrl = rawApiUrl.replace(/\/+$/, "");
+    const apiUrl = resolveApiUrl();
     fetch(`${apiUrl}/health`, { method: "GET", cache: "no-store" }).catch(() => {});
   }, []);
 
@@ -143,8 +159,7 @@ export default function AnalysisPage() {
     setIsUploading(true);
     setUploadProgress(25);
 
-    const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-    const apiUrl = rawApiUrl.replace(/\/+$/, "");
+    const apiUrl = resolveApiUrl();
     const formData = new FormData();
     formData.append("file", file);
     formData.append("clahe", applyClahe ? "true" : "false");
@@ -199,10 +214,12 @@ export default function AnalysisPage() {
         user?.id
       );
     } catch (err: unknown) {
-      const msg =
-        err instanceof Error
-          ? err.message
-          : "Failed to communicate with prediction service. Ensure the FastAPI backend is running.";
+      let msg = "Failed to communicate with prediction service.";
+      if (err instanceof TypeError && err.message.toLowerCase().includes("fetch")) {
+        msg = `Connection error (${apiUrl}). The cloud inference service may be spinning up from standby or deploying. Please wait 15-20 seconds and click Run Analysis again.`;
+      } else if (err instanceof Error) {
+        msg = err.message;
+      }
       setError(msg);
     } finally {
       setIsUploading(false);
