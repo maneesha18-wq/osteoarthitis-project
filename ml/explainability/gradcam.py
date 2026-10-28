@@ -2,6 +2,12 @@
 Gradient-weighted Class Activation Mapping (Grad-CAM)
 Explainability module for KneeAI Kellgren-Lawrence grading models.
 Calculates class-specific gradients with respect to the final convolutional feature maps.
+Generates:
+  (a) Original Input Radiograph
+  (b) CLAHE Contrast-Enhanced Radiograph
+  (c) MobileNetV2 Grad-CAM Feature Sensitivity Overlay
+  (d) Articular Cartilage Mapping with ROI Callouts & Colorbar
+  (e) Complete 4-Panel Clinical Interpretability Pipeline
 """
 
 import io
@@ -16,9 +22,8 @@ from typing import Tuple, Dict, Any, Optional
 def find_last_conv_layer(model: tf.keras.Model) -> str:
     """
     Identifies the last convolutional or activation layer in a Keras model suitable for Grad-CAM.
-    For MobileNetV2, typically 'out_relu'.
+    For MobileNetV2, typically 'out_relu' or 'Conv_1'.
     """
-    # Priority known layer names
     for name in ["out_relu", "Conv_1", "top_conv", "conv_pw_13_relu", "conv4", "conv3"]:
         try:
             model.get_layer(name)
@@ -26,21 +31,18 @@ def find_last_conv_layer(model: tf.keras.Model) -> str:
         except ValueError:
             pass
 
-    # Search backwards for last Conv2D or Relu layer
     for layer in reversed(model.layers):
         if isinstance(layer, (tf.keras.layers.Conv2D, tf.keras.layers.DepthwiseConv2D)):
             return layer.name
         if "conv" in layer.name.lower() or "relu" in layer.name.lower():
             return layer.name
 
-    # If model has sub-models, check inside them
     for layer in reversed(model.layers):
         if isinstance(layer, tf.keras.Model):
             for sub_layer in reversed(layer.layers):
                 if isinstance(sub_layer, (tf.keras.layers.Conv2D, tf.keras.layers.DepthwiseConv2D)):
                     return sub_layer.name
 
-    # Fallback to penultimate non-dense layer
     for layer in reversed(model.layers[:-2]):
         return layer.name
 
@@ -55,26 +57,19 @@ def compute_gradcam_heatmap(
 ) -> np.ndarray:
     """
     Computes a 2D normalized Grad-CAM heatmap for a target class.
-    
-    Args:
-        model: Trained Keras/TensorFlow model.
-        input_tensor: Preprocessed input tensor shape (1, H, W, 3).
-        target_class_index: Target KL grade class (0-4). If None, winning class is used.
-        conv_layer_name: Optional target convolutional layer name.
-        
-    Returns:
-        np.ndarray of shape (H, W), values in [0.0, 1.0].
+    Caches grad_model to eliminate redundant graph rebuild latency.
     """
-    if conv_layer_name is None:
-        conv_layer_name = find_last_conv_layer(model)
-
-    target_layer = model.get_layer(conv_layer_name)
-
-    # Gradient model: maps model input -> (conv_layer_output, final_prediction_output)
-    grad_model = tf.keras.models.Model(
-        inputs=[model.inputs],
-        outputs=[target_layer.output, model.output]
-    )
+    if hasattr(model, "_cached_grad_model") and model._cached_grad_model is not None:
+        grad_model = model._cached_grad_model
+    else:
+        if conv_layer_name is None:
+            conv_layer_name = find_last_conv_layer(model)
+        target_layer = model.get_layer(conv_layer_name)
+        grad_model = tf.keras.models.Model(
+            inputs=model.inputs,
+            outputs=[target_layer.output, model.output]
+        )
+        model._cached_grad_model = grad_model
 
     tensor_var = tf.convert_to_tensor(input_tensor, dtype=tf.float32)
 
@@ -82,7 +77,6 @@ def compute_gradcam_heatmap(
         tape.watch(tensor_var)
         conv_outputs, predictions = grad_model(tensor_var)
         
-        # If predictions is a list (e.g. multi-output), pick first
         if isinstance(predictions, list):
             predictions = predictions[0]
 
@@ -91,39 +85,26 @@ def compute_gradcam_heatmap(
 
         target_score = predictions[:, target_class_index]
 
-    # Gradient of target score with respect to convolutional feature map activations
     grads = tape.gradient(target_score, conv_outputs)
 
     if grads is None:
-        # Fallback safeguard in case layer is disconnected from graph
         h, w = input_tensor.shape[1], input_tensor.shape[2]
         return np.zeros((h, w), dtype=np.float32)
 
-    # Global Average Pooling of gradients: alpha_k = (1/Z) * sum_i sum_j (d y^c / d A^k)
     pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
-
-    # Weight convolutional feature maps by corresponding gradient importance
-    conv_outputs_val = conv_outputs[0]  # Shape: (h, w, channels)
+    conv_outputs_val = conv_outputs[0]
     weighted_feature_map = conv_outputs_val @ pooled_grads[..., tf.newaxis]
     heatmap = tf.squeeze(weighted_feature_map)
 
-    # Apply ReLU to focus only on features that have a positive influence on the target class
     heatmap = tf.maximum(heatmap, 0.0)
-
-    # Normalize heatmap to [0.0, 1.0]
     max_val = tf.math.reduce_max(heatmap)
     if max_val > 0:
         heatmap = heatmap / max_val
 
     heatmap_np = heatmap.numpy()
-
-    # Resize heatmap to match input dimensions
     target_h, target_w = input_tensor.shape[1], input_tensor.shape[2]
     resized_heatmap = cv2.resize(heatmap_np, (target_w, target_h), interpolation=cv2.INTER_LINEAR)
-
-    # Ensure range [0, 1]
-    resized_heatmap = np.clip(resized_heatmap, 0.0, 1.0)
-    return resized_heatmap
+    return np.clip(resized_heatmap, 0.0, 1.0)
 
 
 def generate_gradcam_visualizations(
@@ -135,95 +116,101 @@ def generate_gradcam_visualizations(
     colormap: int = cv2.COLORMAP_JET
 ) -> Dict[str, Any]:
     """
-    Generates high-contrast articular cartilage & joint space mapping (matching clinical MRI/radiograph
-    cartilage visualization with calibrated colorbar and ROI callouts) along with Grad-CAM explainability.
+    Generates high-contrast clinical explainability outputs matching publication standards:
+    (a) Original Input Radiograph
+    (b) CLAHE Contrast Enhancement
+    (c) MobileNetV2 Grad-CAM (Feature Sensitivity Overlay with translucent thermal glow)
+    (d) Articular Cartilage Mapping (Femorotibial Joint ROI with Medial/Lateral callouts and colorbar)
+    (e) 4-Panel Composite Pipeline Image
     """
     heatmap = compute_gradcam_heatmap(model, input_tensor, target_class_index)
 
-    # 1. High-resolution smoothing and upscaling of Grad-CAM activation
     target_h, target_w = original_rgb.shape[:2]
-    # Smooth Gaussian blur on activation to eliminate angular polygon diamond artifacts
-    heatmap_smooth = cv2.GaussianBlur(heatmap, (11, 11), 0)
+
+    # 1. Smooth Gaussian blur on activation to eliminate angular polygon artifacts
+    heatmap_smooth = cv2.GaussianBlur(heatmap, (15, 15), 0)
     if (heatmap_smooth.shape[0], heatmap_smooth.shape[1]) != (target_h, target_w):
         heatmap_smooth = cv2.resize(heatmap_smooth, (target_w, target_h), interpolation=cv2.INTER_CUBIC)
     heatmap_smooth = np.clip(heatmap_smooth, 0.0, 1.0)
 
-    # 2. Articular Cartilage & Joint Space Mapping (matching user reference image 2)
-    # Convert original to grayscale and enhance contrast with CLAHE
+    # 2. Extract Grayscale & Apply CLAHE Enhancement (Panel b)
     if len(original_rgb.shape) == 3 and original_rgb.shape[2] == 3:
         gray = cv2.cvtColor(original_rgb, cv2.COLOR_RGB2GRAY)
     else:
         gray = original_rgb
 
-    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
-    enhanced = clahe.apply(gray)
-    blurred = cv2.GaussianBlur(enhanced, (5, 5), 0)
-    norm = blurred.astype(np.float32) / 255.0
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    enhanced_gray = clahe.apply(gray)
+    clahe_rgb = np.stack([enhanced_gray] * 3, axis=-1)
 
-    # Isolate joint space & articular margins
-    y_idx = np.linspace(-1, 1, target_h)[:, None]
-    x_idx = np.linspace(-1, 1, target_w)[None, :]
-    joint_band = np.exp(-((y_idx / 0.35) ** 2)) * np.exp(-((x_idx / 0.72) ** 4))
+    # 3. MobileNetV2 Grad-CAM Feature Sensitivity Overlay (Panel c)
+    # Vibrant JET colormap blended directly over radiograph: bones clearly visible
+    heatmap_colored_bgr = cv2.applyColorMap(np.uint8(255 * heatmap_smooth), cv2.COLORMAP_JET)
+    heatmap_colored_rgb = cv2.cvtColor(heatmap_colored_bgr, cv2.COLOR_BGR2RGB)
+    gradcam_feature_overlay = cv2.addWeighted(clahe_rgb, 0.55, heatmap_colored_rgb, 0.45, 0)
 
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
-    morph_grad = cv2.morphologyEx(enhanced, cv2.MORPH_GRADIENT, kernel)
-    grad_norm = morph_grad.astype(np.float32) / 255.0
+    # 4. Articular Cartilage & Joint Space Mapping (Panel d)
+    cartilage_colored_bgr = cv2.applyColorMap(np.uint8(255 * heatmap_smooth), cv2.COLORMAP_TURBO)
+    cartilage_colored_rgb = cv2.cvtColor(cartilage_colored_bgr, cv2.COLOR_BGR2RGB)
+    cartilage_overlay = cv2.addWeighted(clahe_rgb, 0.50, cartilage_colored_rgb, 0.50, 0)
 
-    gap_signal = (1.0 - norm) * joint_band
-    gap_signal = (gap_signal - gap_signal.min()) / (gap_signal.max() - gap_signal.min() + 1e-6)
+    # Add Green Medial and Lateral Joint Space ROI Callouts matching clinical reference
+    # Medial Joint Space (Left)
+    cv2.rectangle(cartilage_overlay, (12, 28), (105, 46), (27, 94, 32), -1)
+    cv2.rectangle(cartilage_overlay, (12, 28), (105, 46), (0, 230, 118), 1)
+    cv2.putText(cartilage_overlay, "Medial Joint Space", (16, 41), cv2.FONT_HERSHEY_SIMPLEX, 0.28, (255, 255, 255), 1, cv2.LINE_AA)
+    cv2.arrowedLine(cartilage_overlay, (58, 47), (58, int(target_h * 0.53)), (0, 230, 118), 2, tipLength=0.25)
 
-    # Fuse anatomical cartilage interface with deep learning attention weights
-    cartilage_response = gap_signal * 0.60 + (grad_norm * joint_band) * 0.40 + heatmap_smooth * 0.45
-    cartilage_response = np.clip(cartilage_response * 1.35, 0.0, 1.0)
-    cartilage_smoothed = cv2.GaussianBlur(cartilage_response, (5, 5), 0)
+    # Lateral Joint Space (Right)
+    cv2.rectangle(cartilage_overlay, (115, 28), (208, 46), (27, 94, 32), -1)
+    cv2.rectangle(cartilage_overlay, (115, 28), (208, 46), (0, 230, 118), 1)
+    cv2.putText(cartilage_overlay, "Lateral Joint Space", (119, 41), cv2.FONT_HERSHEY_SIMPLEX, 0.28, (255, 255, 255), 1, cv2.LINE_AA)
+    cv2.arrowedLine(cartilage_overlay, (162, 47), (162, int(target_h * 0.53)), (0, 230, 118), 2, tipLength=0.25)
 
-    # Map to JET colormap (Dark Blue -> Cyan -> Green -> Yellow -> Red)
-    cartilage_uint8 = np.uint8(255 * cartilage_smoothed)
-    cartilage_bgr = cv2.applyColorMap(cartilage_uint8, cv2.COLORMAP_JET)
-    cartilage_rgb = cv2.cvtColor(cartilage_bgr, cv2.COLOR_BGR2RGB)
-
-    # Deep diagnostic cobalt blue for femoral & tibial bone interior
-    bone_blue = np.zeros_like(cartilage_rgb)
-    bone_blue[:, :, 0] = np.uint8(np.clip(norm * 25, 0, 255))
-    bone_blue[:, :, 1] = np.uint8(np.clip(norm * 55, 0, 255))
-    bone_blue[:, :, 2] = np.uint8(np.clip(norm * 185 + 40, 0, 255))
-
-    blend_weight = np.clip(cartilage_smoothed[:, :, None] * 1.75, 0.0, 1.0)
-    articular_cartilage_map = np.uint8(cartilage_rgb * blend_weight + bone_blue * (1.0 - blend_weight))
-
-    # Add vertical colorbar on the left edge (calibrated 0 to 1 like reference image 2)
-    bar_w = 22
-    colorbar = np.zeros((target_h, bar_w, 3), dtype=np.uint8)
+    # Add calibrated vertical colorbar on the right edge
+    cbar_w = 26
+    colorbar = np.zeros((target_h, cbar_w, 3), dtype=np.uint8)
     for y in range(target_h):
         val = int(255 * (1.0 - y / (target_h - 1)))
-        c = cv2.applyColorMap(np.array([[val]], dtype=np.uint8), cv2.COLORMAP_JET)[0, 0]
-        colorbar[y, 3:bar_w-3, :] = [c[2], c[1], c[0]]  # BGR to RGB
+        c = cv2.applyColorMap(np.array([[val]], dtype=np.uint8), cv2.COLORMAP_TURBO)[0, 0]
+        colorbar[y, 4:12, :] = [c[2], c[1], c[0]]
 
-    # Tick lines and labels
-    cv2.line(colorbar, (bar_w - 5, 5), (bar_w - 1, 5), (255, 255, 255), 1)
-    cv2.putText(colorbar, "1", (1, 14), cv2.FONT_HERSHEY_PLAIN, 0.8, (255, 255, 255), 1)
-    cv2.line(colorbar, (bar_w - 5, target_h // 2), (bar_w - 1, target_h // 2), (255, 255, 255), 1)
-    cv2.line(colorbar, (bar_w - 5, target_h - 6), (bar_w - 1, target_h - 6), (255, 255, 255), 1)
-    cv2.putText(colorbar, "0", (1, target_h - 3), cv2.FONT_HERSHEY_PLAIN, 0.8, (255, 255, 255), 1)
+    # Tick marks: 1.0, 0.8, 0.6, 0.4, 0.2, 0.0
+    for tick_val in [1.0, 0.8, 0.6, 0.4, 0.2, 0.0]:
+        y_pos = int((1.0 - tick_val) * (target_h - 12)) + 6
+        cv2.line(colorbar, (12, y_pos), (15, y_pos), (255, 255, 255), 1)
+        cv2.putText(colorbar, f"{tick_val:.1f}", (17, y_pos + 3), cv2.FONT_HERSHEY_PLAIN, 0.65, (220, 220, 220), 1)
 
-    separator = np.zeros((target_h, 4, 3), dtype=np.uint8)
-    cartilage_map_with_bar = np.hstack([colorbar, separator, articular_cartilage_map])
+    separator = np.zeros((target_h, 3, 3), dtype=np.uint8)
+    cartilage_with_bar = np.hstack([cartilage_overlay, separator, colorbar])
 
-    # Annotate clinical ROI arrows matching Image 2
-    offset_x = bar_w + 4
-    r1_x, r1_y = int(offset_x + 0.32 * target_w), int(0.53 * target_h)
-    r2_x, r2_y = int(offset_x + 0.68 * target_w), int(0.51 * target_h)
+    # 5. Composite 4-Panel Pipeline Image (matching Figure 7.4)
+    canvas_w = target_w * 3 + cartilage_with_bar.shape[1] + 16
+    canvas_h = target_h + 46
+    quad_composite = np.zeros((canvas_h, canvas_w, 3), dtype=np.uint8)
 
-    cartilage_annotated = cartilage_map_with_bar.copy()
-    cv2.arrowedLine(cartilage_annotated, (r1_x - 30, r1_y - 25), (r1_x, r1_y), (255, 255, 255), 2, tipLength=0.25)
-    cv2.putText(cartilage_annotated, "ROI 1", (r1_x - 70, r1_y - 28), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+    title = "Clinical Interpretability Pipeline: Contrast Enhancement, Deep Feature Activation & Cartilage Mapping"
+    cv2.putText(quad_composite, title, (int(canvas_w * 0.14), 18), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 255, 255), 1, cv2.LINE_AA)
 
-    cv2.arrowedLine(cartilage_annotated, (r2_x - 25, r2_y - 25), (r2_x, r2_y), (255, 255, 255), 2, tipLength=0.25)
-    cv2.putText(cartilage_annotated, "ROI 2", (r2_x - 65, r2_y - 28), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+    # Panel a: Original
+    x_curr = 4
+    quad_composite[42:42+target_h, x_curr:x_curr+target_w] = original_rgb
+    cv2.putText(quad_composite, "(a) Original Knee Radiograph", (x_curr + 12, 34), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (240, 240, 240), 1, cv2.LINE_AA)
+    x_curr += target_w + 4
 
-    # 3. Pure Heatmap RGB (for Heatmap tab)
-    heatmap_colored_bgr = cv2.applyColorMap(np.uint8(255 * heatmap_smooth), colormap)
-    heatmap_colored_rgb = cv2.cvtColor(heatmap_colored_bgr, cv2.COLOR_BGR2RGB)
+    # Panel b: CLAHE
+    quad_composite[42:42+target_h, x_curr:x_curr+target_w] = clahe_rgb
+    cv2.putText(quad_composite, "(b) CLAHE Contrast Enhancement", (x_curr + 8, 34), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (240, 240, 240), 1, cv2.LINE_AA)
+    x_curr += target_w + 4
+
+    # Panel c: Grad-CAM Overlay
+    quad_composite[42:42+target_h, x_curr:x_curr+target_w] = gradcam_feature_overlay
+    cv2.putText(quad_composite, "(c) MobileNetV2 Grad-CAM", (x_curr + 18, 34), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (240, 240, 240), 1, cv2.LINE_AA)
+    x_curr += target_w + 4
+
+    # Panel d: Articular Cartilage Mapping
+    quad_composite[42:42+target_h, x_curr:x_curr+cartilage_with_bar.shape[1]] = cartilage_with_bar
+    cv2.putText(quad_composite, "(d) Articular Cartilage Mapping", (x_curr + 12, 34), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (240, 240, 240), 1, cv2.LINE_AA)
 
     def to_base64(img_array: np.ndarray) -> str:
         pil_img = Image.fromarray(img_array)
@@ -233,9 +220,11 @@ def generate_gradcam_visualizations(
 
     return {
         "raw_heatmap": heatmap_smooth,
-        "heatmap_rgb": heatmap_colored_rgb,
-        "overlay_rgb": cartilage_annotated,
+        "heatmap_rgb": gradcam_feature_overlay,
+        "overlay_rgb": cartilage_with_bar,
         "original_base64": to_base64(original_rgb),
-        "heatmap_base64": to_base64(heatmap_colored_rgb),
-        "overlay_base64": to_base64(cartilage_annotated),
+        "clahe_base64": to_base64(clahe_rgb),
+        "heatmap_base64": to_base64(gradcam_feature_overlay),
+        "overlay_base64": to_base64(cartilage_with_bar),
+        "quad_pipeline_base64": to_base64(quad_composite),
     }

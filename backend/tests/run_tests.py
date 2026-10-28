@@ -4,6 +4,7 @@ Uses Python's standard library unittest to verify API endpoints,
 preprocessing, model loading, and Grad-CAM generation.
 """
 
+import os
 import sys
 import io
 import json
@@ -14,6 +15,9 @@ from PIL import Image
 # Ensure project root is in sys.path
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT_DIR))
+
+os.environ.setdefault("MPLCONFIGDIR", os.environ.get("TEMP", os.path.expanduser("~")))
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 from fastapi.testclient import TestClient
 from backend.app.main import app
@@ -56,12 +60,17 @@ class TestKneeAIBackend(unittest.TestCase):
         """Test POST /predict with a real knee radiograph image."""
         # Find sample radiograph in dataset
         sample_path = None
-        for candidate in ["data set/test/0", "data set/auto_test/0", "archive/test/1"]:
-            p = Path(candidate)
+        for candidate in [
+            "Digital Knee X-ray Images/Digital Knee X-ray Images/Knee X-ray Images/MedicalExpert-I/MedicalExpert-I/0Normal",
+            "data set/test/0",
+            "archive/test/1"
+        ]:
+            p = ROOT_DIR / candidate
             if p.exists():
-                for f in p.glob("*.png"):
-                    sample_path = f
-                    break
+                for f in p.iterdir():
+                    if f.suffix.lower() == ".png":
+                        sample_path = f
+                        break
             if sample_path:
                 break
 
@@ -97,6 +106,8 @@ class TestKneeAIBackend(unittest.TestCase):
         self.assertTrue(len(result["original_image_base64"]) > 100)
         self.assertTrue(len(result["gradcam_heatmap_base64"]) > 100)
         self.assertTrue(len(result["gradcam_overlay_base64"]) > 100)
+        self.assertTrue(len(result.get("clahe_image_base64", "")) > 100)
+        self.assertTrue(len(result.get("quad_pipeline_base64", "")) > 100)
         self.assertEqual(result["status"], "completed")
 
 if __name__ == "__main__":

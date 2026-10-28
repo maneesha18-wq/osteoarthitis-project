@@ -22,9 +22,9 @@
     "clahe_applied": true,
     "normalize": "mobilenetv2"
   },
-  "dataset_source": "Kaggle Knee Osteoarthritis Dataset with Severity",
-  "total_training_samples": 1585,
-  "total_test_samples": 340,
-  "accuracy": 0.3205882352941177,
-  "macro_f1": 0.20654922064965295
+  "dataset_source": "Digital Knee X-ray Images/Digital Knee X-ray Images/Knee X-ray Images",
+  "total_training_samples": 2311,
+  "total_test_samples": 495,
+  "accuracy": 0.6181818181818182,
+  "macro_f1": 0.5525874405914999
 }

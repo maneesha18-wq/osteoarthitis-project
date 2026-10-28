@@ -55,6 +55,7 @@ class ModelManager:
                 self.model = tf.keras.models.load_model(str(model_path))
                 self.is_ready = True
                 print("[+] Model loaded successfully from checkpoint.")
+                self._warmup_model()
                 return
             except Exception as e:
                 print(f"[-] Warning: Failed to load checkpoint ({str(e)}). Building fresh architecture.")
@@ -72,10 +73,22 @@ class ModelManager:
             compile_model(self.model)
             self.is_ready = True
             print("[+] MobileNetV2 architecture successfully initialized and ready.")
+            self._warmup_model()
         except Exception as e:
             self.load_error = str(e)
             self.is_ready = False
             print(f"[-] Critical: Failed to initialize model: {str(e)}")
+
+    def _warmup_model(self):
+        """Executes a single dummy inference pass to compile TensorFlow C++ kernels."""
+        try:
+            dummy_input = np.zeros((1, 224, 224, 3), dtype=np.float32)
+            _ = self.model.predict(dummy_input, verbose=0)
+            from ml.explainability.gradcam import compute_gradcam_heatmap
+            _ = compute_gradcam_heatmap(self.model, dummy_input, target_class_index=0)
+            print("[+] Model warmup completed. JIT kernels compiled and ready.")
+        except Exception as e:
+            print(f"[-] Non-critical warmup warning: {str(e)}")
 
     def run_prediction(
         self,
@@ -157,8 +170,10 @@ class ModelManager:
             ),
             inference_time_ms=elapsed_ms,
             original_image_base64=gradcam_results["original_base64"],
+            clahe_image_base64=gradcam_results.get("clahe_base64"),
             gradcam_heatmap_base64=gradcam_results["heatmap_base64"],
             gradcam_overlay_base64=gradcam_results["overlay_base64"],
+            quad_pipeline_base64=gradcam_results.get("quad_pipeline_base64"),
             interpretation_notes=(
                 f"Grad-CAM reflects model feature sensitivity for {grade_info['label']}. "
                 "Warm colors indicate regions contributing to the classification. "

@@ -43,10 +43,13 @@ ml/data/kaggle/
 archive/
 data set/
 data\ set/
+Digital Knee X-ray Images/
 *.zip
 *.tar.gz
+*.rar
 *.h5
 *.keras
+!ml/artifacts/mobilenetv2_knee_kl.keras
 *.pth
 *.pt
 ml/artifacts/weights/
@@ -55,6 +58,7 @@ backend/app/models/*.keras
 backend/app/models/*.pth
 
 # Logs & temp
+.keras/
 *.log
 scratch/
 temp/

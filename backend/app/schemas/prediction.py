@@ -25,8 +25,10 @@ class PredictionResponse(BaseModel):
     preprocessing_applied: PreprocessingMetadata = Field(..., description="Preprocessing details")
     inference_time_ms: float = Field(..., description="Execution latency in milliseconds")
     original_image_base64: str = Field(..., description="Base64 encoded original radiograph")
+    clahe_image_base64: Optional[str] = Field(None, description="Base64 encoded CLAHE enhanced radiograph")
     gradcam_heatmap_base64: str = Field(..., description="Base64 encoded Grad-CAM heatmap")
     gradcam_overlay_base64: str = Field(..., description="Base64 encoded transparent overlay")
+    quad_pipeline_base64: Optional[str] = Field(None, description="Base64 encoded 4-panel interpretability pipeline")
     interpretation_notes: str = Field(..., description="Clinical research advisory note")
 
 class HealthResponse(BaseModel):

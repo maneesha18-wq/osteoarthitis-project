@@ -12,16 +12,21 @@ import argparse
 from pathlib import Path
 from typing import Tuple, List, Dict, Any
 
-import numpy as np
-import tensorflow as tf
-from sklearn.model_selection import train_test_split
-from sklearn.utils.class_weight import compute_class_weight
-
-# Add root directory to path for imports
 CURRENT_DIR = Path(__file__).resolve().parent
 ROOT_DIR = CURRENT_DIR.parent.parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
+
+keras_dir = ROOT_DIR / ".keras"
+keras_dir.mkdir(parents=True, exist_ok=True)
+os.environ.setdefault("KERAS_HOME", str(keras_dir))
+os.environ.setdefault("MPLCONFIGDIR", os.environ.get("TEMP", os.path.expanduser("~")))
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+
+import numpy as np
+import tensorflow as tf
+from sklearn.model_selection import train_test_split
+from sklearn.utils.class_weight import compute_class_weight
 
 from ml.preprocessing.pipeline import preprocess_image
 from ml.training.models import build_mobilenetv2_model, build_baseline_cnn, compile_model
@@ -37,9 +42,18 @@ def set_seed(seed: int = SEED):
     os.environ["PYTHONHASHSEED"] = str(seed)
 
 
+CLASS_NAME_MAP = {
+    "0": 0, "0normal": 0, "normal": 0,
+    "1": 1, "1doubtful": 1, "doubtful": 1,
+    "2": 2, "2mild": 2, "mild": 2,
+    "3": 3, "3moderate": 3, "moderate": 3,
+    "4": 4, "4severe": 4, "severe": 4,
+}
+
 def discover_dataset(dataset_dir: str) -> Tuple[List[str], List[int]]:
     """
-    Scans dataset directory for images organized in class subfolders (0, 1, 2, 3, 4).
+    Scans dataset directory for images organized in class subfolders.
+    Supports '0', '1', '2', '3', '4' as well as '0Normal', '1Doubtful', '2Mild', etc.
     """
     valid_extensions = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"}
     image_paths = []
@@ -54,11 +68,14 @@ def discover_dataset(dataset_dir: str) -> Tuple[List[str], List[int]]:
             ext = os.path.splitext(f)[1].lower()
             if ext in valid_extensions:
                 rel_parts = Path(root).relative_to(base_path).parts
-                # Identify grade from deepest directory name that is '0', '1', '2', '3', or '4'
                 grade = None
                 for part in reversed(rel_parts):
-                    if part in ["0", "1", "2", "3", "4"]:
-                        grade = int(part)
+                    clean = part.lower().strip()
+                    if clean in CLASS_NAME_MAP:
+                        grade = CLASS_NAME_MAP[clean]
+                        break
+                    elif clean and clean[0] in ["0", "1", "2", "3", "4"]:
+                        grade = int(clean[0])
                         break
 
                 if grade is not None:
@@ -193,12 +210,21 @@ def train_pipeline(
 
     # 5. Build & Compile Model
     if model_type == "mobilenetv2":
-        model = build_mobilenetv2_model(
-            input_shape=(224, 224, 3),
-            num_classes=5,
-            pretrained_weights="imagenet",
-            freeze_base=not fine_tune
-        )
+        backup_model_path = output_path / f"{model_type}_knee_kl_backup.keras"
+        existing_model_path = output_path / f"{model_type}_knee_kl.keras"
+        if backup_model_path.exists():
+            print(f"[+] Initializing from verified architecture: {backup_model_path}")
+            model = tf.keras.models.load_model(str(backup_model_path))
+        elif existing_model_path.exists():
+            print(f"[+] Initializing from verified architecture: {existing_model_path}")
+            model = tf.keras.models.load_model(str(existing_model_path))
+        else:
+            model = build_mobilenetv2_model(
+                input_shape=(224, 224, 3),
+                num_classes=5,
+                pretrained_weights="imagenet",
+                freeze_base=not fine_tune
+            )
     else:
         model = build_baseline_cnn(input_shape=(224, 224, 3), num_classes=5)
 
@@ -278,7 +304,7 @@ def train_pipeline(
             "clahe_applied": True,
             "normalize": "mobilenetv2",
         },
-        "dataset_source": "Kaggle Knee Osteoarthritis Dataset with Severity",
+        "dataset_source": str(dataset_dir),
         "total_training_samples": len(train_paths),
         "total_test_samples": len(test_paths),
         "accuracy": metrics["overall"]["accuracy"],

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Upload,
   AlertCircle,
@@ -43,8 +43,10 @@ interface PredictionResponse {
   };
   inference_time_ms: number;
   original_image_base64: string;
+  clahe_image_base64?: string;
   gradcam_heatmap_base64: string;
   gradcam_overlay_base64: string;
+  quad_pipeline_base64?: string;
   interpretation_notes?: string;
 }
 
@@ -58,10 +60,17 @@ export default function AnalysisPage() {
   const [applyClahe, setApplyClahe] = useState(true);
   const [result, setResult] = useState<PredictionResponse | null>(null);
   const [activeImageView, setActiveImageView] = useState<
-    "side-by-side" | "overlay" | "heatmap" | "original"
-  >("side-by-side");
+    "pipeline" | "side-by-side" | "overlay" | "heatmap" | "original"
+  >("pipeline");
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+
+  // Eagerly wake up backend container upon entering analysis interface
+  useEffect(() => {
+    const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const apiUrl = rawApiUrl.replace(/\/+$/, "");
+    fetch(`${apiUrl}/health`, { method: "GET", cache: "no-store" }).catch(() => {});
+  }, []);
 
   const handleZoomIn = () =>
     setZoomLevel((prev) => Math.min(Number((prev + 0.25).toFixed(2)), 3.5));
@@ -622,14 +631,24 @@ export default function AnalysisPage() {
                     {/* View Switcher */}
                     <div className="flex items-center gap-1 bg-lightSage/30 border border-lightBorder p-1 rounded-lg text-xs font-medium">
                       <button
-                        onClick={() => setActiveImageView("side-by-side")}
+                        onClick={() => setActiveImageView("pipeline")}
                         className={`px-2 py-1 rounded-md transition-all ${
-                          activeImageView === "side-by-side"
+                          activeImageView === "pipeline"
                             ? "bg-white text-darkGreen shadow-subtle border border-lightBorder/60 font-semibold"
                             : "text-darkGreen-muted hover:text-darkGreen"
                         }`}
                       >
-                        Side by Side
+                        4-Panel Pipeline
+                      </button>
+                      <button
+                        onClick={() => setActiveImageView("heatmap")}
+                        className={`px-2 py-1 rounded-md transition-all ${
+                          activeImageView === "heatmap"
+                            ? "bg-white text-darkGreen shadow-subtle border border-lightBorder/60 font-semibold"
+                            : "text-darkGreen-muted hover:text-darkGreen"
+                        }`}
+                      >
+                        Grad-CAM Overlay
                       </button>
                       <button
                         onClick={() => setActiveImageView("overlay")}
@@ -642,14 +661,14 @@ export default function AnalysisPage() {
                         Cartilage Map (ROI)
                       </button>
                       <button
-                        onClick={() => setActiveImageView("heatmap")}
+                        onClick={() => setActiveImageView("side-by-side")}
                         className={`px-2 py-1 rounded-md transition-all ${
-                          activeImageView === "heatmap"
+                          activeImageView === "side-by-side"
                             ? "bg-white text-darkGreen shadow-subtle border border-lightBorder/60 font-semibold"
                             : "text-darkGreen-muted hover:text-darkGreen"
                         }`}
                       >
-                        Heatmap
+                        Side by Side
                       </button>
                       <button
                         onClick={() => setActiveImageView("original")}
@@ -704,6 +723,23 @@ export default function AnalysisPage() {
                 </div>
 
                 {/* Display Panels */}
+                {activeImageView === "pipeline" && (
+                  <div className="w-full space-y-2">
+                    <span className="text-[11px] font-bold text-sageAccent uppercase tracking-wider block">
+                      Clinical Interpretability Pipeline (Contrast, Grad-CAM & Cartilage Map)
+                    </span>
+                    <div className="w-full rounded-lg overflow-hidden border border-lightBorder bg-black flex items-center justify-center p-2">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`data:image/png;base64,${result.quad_pipeline_base64 || result.gradcam_overlay_base64}`}
+                        alt="Clinical Interpretability Pipeline"
+                        className="w-full h-auto object-contain transition-transform duration-150 ease-out"
+                        style={{ transform: `scale(${zoomLevel})` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
                 {activeImageView === "side-by-side" && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
