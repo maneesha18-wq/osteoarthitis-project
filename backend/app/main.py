@@ -14,8 +14,13 @@ if str(ROOT_DIR) not in sys.path:
 import os
 os.environ.setdefault("MPLCONFIGDIR", os.environ.get("TEMP", os.path.expanduser("~")))
 os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
+os.environ.setdefault("TF_ENABLE_ONEDNN_OPTS", "0")
+os.environ.setdefault("TF_NUM_INTRAOP_THREADS", "2")
+os.environ.setdefault("TF_NUM_INTEROP_THREADS", "1")
+os.environ.setdefault("OMP_NUM_THREADS", "2")
 
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, status
+from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -143,7 +148,7 @@ async def predict_radiograph(
         )
 
     try:
-        response = model_manager.run_prediction(file_bytes=file_bytes, apply_clahe=clahe)
+        response = await run_in_threadpool(model_manager.run_prediction, file_bytes, clahe)
         return response
     except ValueError as ve:
         raise HTTPException(

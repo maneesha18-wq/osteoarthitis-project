@@ -57,24 +57,12 @@ class TestKneeAIBackend(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_05_predict_real_radiograph(self):
-        """Test POST /predict with a real knee radiograph image."""
-        # Find sample radiograph in dataset
-        sample_path = None
-        for candidate in [
-            "Digital Knee X-ray Images/Digital Knee X-ray Images/Knee X-ray Images/MedicalExpert-I/MedicalExpert-I/0Normal",
-            "data set/test/0",
-            "archive/test/1"
-        ]:
-            p = ROOT_DIR / candidate
-            if p.exists():
-                for f in p.iterdir():
-                    if f.suffix.lower() == ".png":
-                        sample_path = f
-                        break
-            if sample_path:
-                break
+        """Test POST /predict with a knee radiograph image."""
+        sample_path = ROOT_DIR / "Digital Knee X-ray Images/Digital Knee X-ray Images/Knee X-ray Images/MedicalExpert-I/MedicalExpert-I/0Normal/NormalG0 (1).png"
+        if not sample_path.exists():
+            sample_path = ROOT_DIR / "data set/test/0/9003175R.png"
 
-        if sample_path:
+        if sample_path.exists():
             with open(sample_path, "rb") as f:
                 file_bytes = f.read()
         else:

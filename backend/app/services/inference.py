@@ -5,6 +5,7 @@ Encapsulates model lifecycle, radiograph validation, forward pass, and Grad-CAM 
 
 import time
 import uuid
+import gc
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, Dict, Any, List
@@ -20,7 +21,10 @@ from backend.app.schemas.prediction import (
     PreprocessingMetadata
 )
 from ml.preprocessing.pipeline import decode_and_validate_image, preprocess_image
-from ml.explainability.gradcam import generate_gradcam_visualizations
+from ml.explainability.gradcam import (
+    get_or_create_grad_model,
+    generate_gradcam_visualizations_from_heatmap
+)
 from ml.training.models import build_mobilenetv2_model, compile_model
 
 KL_GRADE_INFO = {
@@ -80,15 +84,14 @@ class ModelManager:
             print(f"[-] Critical: Failed to initialize model: {str(e)}")
 
     def _warmup_model(self):
-        """Executes a single dummy inference pass to compile TensorFlow C++ kernels."""
+        """Pre-compiles TensorFlow XLA kernels and graph-mode Grad-CAM step."""
         try:
-            dummy_input = np.zeros((1, 224, 224, 3), dtype=np.float32)
-            _ = self.model.predict(dummy_input, verbose=0)
-            from ml.explainability.gradcam import compute_gradcam_heatmap
-            _ = compute_gradcam_heatmap(self.model, dummy_input, target_class_index=0)
-            print("[+] Model warmup completed. JIT kernels compiled and ready.")
+            _, grad_step_fn = get_or_create_grad_model(self.model)
+            dummy_input = tf.zeros((1, 224, 224, 3), dtype=tf.float32)
+            _ = grad_step_fn(dummy_input)
+            print("[+] Model & Grad-CAM warmup completed. JIT kernels compiled and ready.")
         except Exception as e:
-            print(f"[-] Non-critical warmup warning: {str(e)}")
+            print(f"[-] Warmup warning: {str(e)}")
 
     def run_prediction(
         self,
@@ -96,7 +99,8 @@ class ModelManager:
         apply_clahe: bool = True
     ) -> PredictionResponse:
         """
-        Executes radiograph validation, preprocessing, model prediction, and Grad-CAM explainability.
+        Executes radiograph validation, preprocessing, single-pass forward prediction,
+        and high-speed Grad-CAM clinical explainability.
         """
         if not self.is_ready or self.model is None:
             raise RuntimeError(
@@ -118,12 +122,19 @@ class ModelManager:
             normalize_mode="mobilenetv2"
         )
 
-        # 3. Model Forward Pass
-        predictions = self.model.predict(input_tensor, verbose=0)
-        class_probs = predictions[0]
+        # 3. High-Speed Single-Pass Forward + Grad-CAM Step (Graph JIT)
+        if not hasattr(self.model, "_cached_grad_step") or self.model._cached_grad_step is None:
+            _, grad_step_fn = get_or_create_grad_model(self.model)
+        else:
+            grad_step_fn = self.model._cached_grad_step
+
+        tensor_var = tf.convert_to_tensor(input_tensor, dtype=tf.float32)
+        raw_cam_tensor, class_probs_tensor = grad_step_fn(tensor_var)
+        class_probs = class_probs_tensor.numpy()
 
         predicted_class = int(np.argmax(class_probs))
         confidence = float(class_probs[predicted_class])
+        raw_heatmap_np = raw_cam_tensor.numpy()
 
         # 4. 5-Class Probability Distribution
         prob_items: List[ProbabilityItem] = []
@@ -137,10 +148,9 @@ class ModelManager:
                 )
             )
 
-        # 5. Grad-CAM Explainability Generation
-        gradcam_results = generate_gradcam_visualizations(
-            model=self.model,
-            input_tensor=input_tensor,
+        # 5. Fast Clinical Explainability Generation
+        gradcam_results = generate_gradcam_visualizations_from_heatmap(
+            raw_heatmap=raw_heatmap_np,
             original_rgb=original_rgb,
             target_class_index=predicted_class,
             alpha=0.45
@@ -149,10 +159,9 @@ class ModelManager:
         elapsed_ms = (time.perf_counter() - start_time) * 1000.0
         analysis_id = str(uuid.uuid4())
         now_iso = datetime.now(timezone.utc).isoformat()
-
         grade_info = KL_GRADE_INFO[predicted_class]
 
-        return PredictionResponse(
+        response = PredictionResponse(
             analysis_id=analysis_id,
             status="completed",
             predicted_class=predicted_class,
@@ -180,6 +189,12 @@ class ModelManager:
                 "Experimental decision-support result only — not a clinical diagnosis."
             )
         )
+
+        # Explicit garbage collection to keep peak RAM well within 512MB limit
+        del tensor_var, raw_cam_tensor, class_probs_tensor, gradcam_results
+        gc.collect()
+
+        return response
 
 # Global singleton
 model_manager = ModelManager()

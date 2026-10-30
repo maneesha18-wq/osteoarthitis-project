@@ -67,6 +67,14 @@ function resolveApiUrl(): string {
   return (configured || "http://localhost:8000").replace(/\/+$/, "");
 }
 
+// Format raw or typed Base64 into valid Data URI
+function toDataUrl(b64?: string): string {
+  if (!b64) return "";
+  if (b64.startsWith("data:")) return b64;
+  const mime = b64.startsWith("/9j/") ? "image/jpeg" : "image/png";
+  return `data:${mime};base64,${b64}`;
+}
+
 export default function AnalysisPage() {
   const { user } = useAuth();
   const [file, setFile] = useState<File | null>(null);
@@ -82,10 +90,19 @@ export default function AnalysisPage() {
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
-  // Eagerly wake up backend container upon entering analysis interface
+  // Eagerly wake up backend container upon entering analysis interface (once per session)
   useEffect(() => {
     const apiUrl = resolveApiUrl();
-    fetch(`${apiUrl}/health`, { method: "GET", cache: "no-store" }).catch(() => {});
+    try {
+      const warmed = sessionStorage.getItem("kneeai_backend_pinged");
+      if (!warmed) {
+        sessionStorage.setItem("kneeai_backend_pinged", "true");
+        fetch(`${apiUrl}/health`, { method: "GET", cache: "no-store" }).catch(() => {});
+      }
+    } catch {
+      // Fallback
+      fetch(`${apiUrl}/health`, { method: "GET", cache: "no-store" }).catch(() => {});
+    }
   }, []);
 
   const handleZoomIn = () =>
@@ -157,73 +174,87 @@ export default function AnalysisPage() {
 
     setError(null);
     setIsUploading(true);
-    setUploadProgress(25);
+    setUploadProgress(20);
 
     const apiUrl = resolveApiUrl();
     const formData = new FormData();
     formData.append("file", file);
     formData.append("clahe", applyClahe ? "true" : "false");
 
-    try {
-      setUploadProgress(60);
-      const response = await fetch(`${apiUrl}/predict`, {
-        method: "POST",
-        body: formData,
-      });
-
-      setUploadProgress(90);
-
-      if (!response.ok) {
-        let errMessage = `Server error (${response.status})`;
-        try {
-          const errData = await response.json();
-          errMessage = errData.detail || errData.message || errMessage;
-        } catch {
-          // fallback
+    const maxRetries = 2;
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        if (attempt > 0) {
+          setError(`Cloud inference container is waking up from standby... Retrying automatically (${attempt}/${maxRetries})`);
+          await new Promise((r) => setTimeout(r, 2500));
         }
-        throw new Error(errMessage);
-      }
 
-      const data: PredictionResponse = await response.json();
-      setResult(data);
-      setUploadProgress(100);
+        setUploadProgress(40 + attempt * 20);
+        const response = await fetch(`${apiUrl}/predict`, {
+          method: "POST",
+          body: formData,
+        });
 
-      // Persist analysis record to Supabase with user RLS isolation
-      await saveAnalysis(
-        {
-          id: data.analysis_id,
-          user_id: user?.id,
-          filename: file.name,
-          file_size_bytes: file.size,
-          predicted_grade: data.predicted_class,
-          predicted_grade_label: data.predicted_grade,
-          severity_label: data.severity_label,
-          confidence: data.confidence,
-          probabilities: data.probabilities,
-          model_name: data.model_name,
-          model_version: data.model_version,
-          inference_time_ms: data.inference_time_ms,
-          clahe_applied: applyClahe,
-          has_gradcam: true,
-          notes: data.interpretation_notes,
-          created_at: data.timestamp,
-          original_image_base64: data.original_image_base64,
-          gradcam_heatmap_base64: data.gradcam_heatmap_base64,
-          gradcam_overlay_base64: data.gradcam_overlay_base64,
-        },
-        user?.id
-      );
-    } catch (err: unknown) {
-      let msg = "Failed to communicate with prediction service.";
-      if (err instanceof TypeError && err.message.toLowerCase().includes("fetch")) {
-        msg = `Connection error (${apiUrl}). The cloud inference service may be spinning up from standby or deploying. Please wait 15-20 seconds and click Run Analysis again.`;
-      } else if (err instanceof Error) {
-        msg = err.message;
+        if (response.status === 503 && attempt < maxRetries) {
+          continue; // Auto-retry on cold-start 503
+        }
+
+        if (!response.ok) {
+          let errMessage = `Server error (${response.status})`;
+          try {
+            const errData = await response.json();
+            errMessage = errData.detail || errData.message || errMessage;
+          } catch {
+            // fallback
+          }
+          throw new Error(errMessage);
+        }
+
+        const data: PredictionResponse = await response.json();
+        setResult(data);
+        setError(null);
+        setUploadProgress(100);
+
+        // Persist analysis record to Supabase with user RLS isolation
+        await saveAnalysis(
+          {
+            id: data.analysis_id,
+            user_id: user?.id,
+            filename: file.name,
+            file_size_bytes: file.size,
+            predicted_grade: data.predicted_class,
+            predicted_grade_label: data.predicted_grade,
+            severity_label: data.severity_label,
+            confidence: data.confidence,
+            probabilities: data.probabilities,
+            model_name: data.model_name,
+            model_version: data.model_version,
+            inference_time_ms: data.inference_time_ms,
+            clahe_applied: applyClahe,
+            has_gradcam: true,
+            notes: data.interpretation_notes,
+            created_at: data.timestamp,
+            original_image_base64: data.original_image_base64,
+            gradcam_heatmap_base64: data.gradcam_heatmap_base64,
+            gradcam_overlay_base64: data.gradcam_overlay_base64,
+          },
+          user?.id
+        );
+        break; // Successfully completed
+      } catch (err: unknown) {
+        if (attempt < maxRetries) {
+          continue; // Automatically retry transient network failures
+        }
+        let msg = "Failed to communicate with prediction service.";
+        if (err instanceof TypeError && err.message.toLowerCase().includes("fetch")) {
+          msg = `Connection error (${apiUrl}). The cloud server was in standby and is now warming up. Please wait 10-15 seconds and click Run Analysis again.`;
+        } else if (err instanceof Error) {
+          msg = err.message;
+        }
+        setError(msg);
       }
-      setError(msg);
-    } finally {
-      setIsUploading(false);
     }
+    setIsUploading(false);
   };
 
   const downloadPdfReport = () => {
@@ -294,10 +325,9 @@ export default function AnalysisPage() {
 
       if (hasOriginal) {
         try {
-          const origSrc = result.original_image_base64.startsWith("data:")
-            ? result.original_image_base64
-            : `data:image/png;base64,${result.original_image_base64}`;
-          doc.addImage(origSrc, "PNG", 14, currentY, imgWidth, imgHeight);
+          const origSrc = toDataUrl(result.original_image_base64);
+          const fmt = origSrc.includes("image/jpeg") ? "JPEG" : "PNG";
+          doc.addImage(origSrc, fmt, 14, currentY, imgWidth, imgHeight);
           doc.setFontSize(8);
           doc.setFont("helvetica", "bold");
           doc.setTextColor(80, 100, 90);
@@ -310,10 +340,9 @@ export default function AnalysisPage() {
       if (hasHeatmap) {
         try {
           const heatmapData = result.gradcam_overlay_base64 || result.gradcam_heatmap_base64;
-          const heatmapSrc = heatmapData.startsWith("data:")
-            ? heatmapData
-            : `data:image/png;base64,${heatmapData}`;
-          doc.addImage(heatmapSrc, "PNG", 110, currentY, imgWidth, imgHeight);
+          const heatmapSrc = toDataUrl(heatmapData);
+          const fmt = heatmapSrc.includes("image/jpeg") ? "JPEG" : "PNG";
+          doc.addImage(heatmapSrc, fmt, 110, currentY, imgWidth, imgHeight);
           doc.setFontSize(8);
           doc.setFont("helvetica", "bold");
           doc.setTextColor(80, 100, 90);
@@ -748,7 +777,7 @@ export default function AnalysisPage() {
                     <div className="w-full rounded-lg overflow-hidden border border-lightBorder bg-black flex items-center justify-center p-2">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={`data:image/png;base64,${result.quad_pipeline_base64 || result.gradcam_overlay_base64}`}
+                        src={toDataUrl(result.quad_pipeline_base64 || result.gradcam_overlay_base64)}
                         alt="Clinical Interpretability Pipeline"
                         className="w-full h-auto object-contain transition-transform duration-150 ease-out"
                         style={{ transform: `scale(${zoomLevel})` }}
@@ -766,7 +795,7 @@ export default function AnalysisPage() {
                       <div className="aspect-square rounded-lg overflow-hidden border border-lightBorder bg-black flex items-center justify-center">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                          src={`data:image/png;base64,${result.original_image_base64}`}
+                          src={toDataUrl(result.original_image_base64)}
                           alt="Original Radiograph"
                           className="w-full h-full object-contain transition-transform duration-150 ease-out"
                           style={{ transform: `scale(${zoomLevel})` }}
@@ -781,7 +810,7 @@ export default function AnalysisPage() {
                       <div className="aspect-square rounded-lg overflow-hidden border border-lightBorder bg-black flex items-center justify-center">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
-                          src={`data:image/png;base64,${result.gradcam_overlay_base64}`}
+                          src={toDataUrl(result.gradcam_overlay_base64)}
                           alt="Articular Cartilage Map"
                           className="w-full h-full object-contain transition-transform duration-150 ease-out"
                           style={{ transform: `scale(${zoomLevel})` }}
@@ -795,7 +824,7 @@ export default function AnalysisPage() {
                   <div className="max-w-md mx-auto aspect-square rounded-lg overflow-hidden border border-lightBorder bg-black flex items-center justify-center">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={`data:image/png;base64,${result.gradcam_overlay_base64}`}
+                      src={toDataUrl(result.gradcam_overlay_base64)}
                       alt="Grad-CAM Overlay"
                       className="w-full h-full object-contain transition-transform duration-150 ease-out"
                       style={{ transform: `scale(${zoomLevel})` }}
@@ -807,7 +836,7 @@ export default function AnalysisPage() {
                   <div className="max-w-md mx-auto aspect-square rounded-lg overflow-hidden border border-lightBorder bg-black flex items-center justify-center">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={`data:image/png;base64,${result.gradcam_heatmap_base64}`}
+                      src={toDataUrl(result.gradcam_heatmap_base64)}
                       alt="Grad-CAM Heatmap"
                       className="w-full h-full object-contain transition-transform duration-150 ease-out"
                       style={{ transform: `scale(${zoomLevel})` }}
@@ -819,7 +848,7 @@ export default function AnalysisPage() {
                   <div className="max-w-md mx-auto aspect-square rounded-lg overflow-hidden border border-lightBorder bg-black flex items-center justify-center">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={`data:image/png;base64,${result.original_image_base64}`}
+                      src={toDataUrl(result.original_image_base64)}
                       alt="Original Radiograph"
                       className="w-full h-full object-contain transition-transform duration-150 ease-out"
                       style={{ transform: `scale(${zoomLevel})` }}
@@ -897,7 +926,7 @@ export default function AnalysisPage() {
                         <div className="overflow-auto max-h-[75vh] max-w-[45vw] p-2 bg-black rounded-xl border border-white/10">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
-                            src={`data:image/png;base64,${result.original_image_base64}`}
+                            src={toDataUrl(result.original_image_base64)}
                             alt="Original Radiograph Fullscreen"
                             className="radiograph-crisp max-h-[70vh] object-contain select-none transition-transform duration-100 ease-out"
                             style={{ transform: `scale(${zoomLevel})` }}
@@ -913,7 +942,7 @@ export default function AnalysisPage() {
                         <div className="overflow-auto max-h-[75vh] max-w-[45vw] p-2 bg-black rounded-xl border border-white/10">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
-                            src={`data:image/png;base64,${result.gradcam_overlay_base64}`}
+                            src={toDataUrl(result.gradcam_overlay_base64)}
                             alt="Grad-CAM Overlay Fullscreen"
                             className="radiograph-crisp max-h-[70vh] object-contain select-none transition-transform duration-100 ease-out"
                             style={{ transform: `scale(${zoomLevel})` }}
