@@ -100,12 +100,11 @@ def compute_gradcam_heatmap(
     cam_tensor, _ = grad_step(tensor_var)
     heatmap_np = cam_tensor.numpy()
     
-    max_val = np.max(heatmap_np)
-    if max_val > 0:
-        heatmap_np = heatmap_np / max_val
-
     target_h, target_w = input_tensor.shape[1], input_tensor.shape[2]
-    resized_heatmap = cv2.resize(heatmap_np, (target_w, target_h), interpolation=cv2.INTER_LINEAR)
+    resized_heatmap = cv2.resize(heatmap_np, (target_w, target_h), interpolation=cv2.INTER_CUBIC)
+    max_val = np.max(resized_heatmap)
+    if max_val > 0:
+        resized_heatmap = resized_heatmap / max_val
     return np.clip(resized_heatmap, 0.0, 1.0)
 
 
@@ -151,17 +150,24 @@ def generate_gradcam_visualizations_from_heatmap(
     """
     target_h, target_w = original_rgb.shape[:2]
 
-    # Normalize heatmap if needed
-    heatmap_norm = raw_heatmap.copy()
-    max_val = np.max(heatmap_norm)
-    if max_val > 0:
-        heatmap_norm = heatmap_norm / max_val
-    heatmap_norm = np.clip(heatmap_norm, 0.0, 1.0)
+    # Ensure float32 array
+    heatmap_raw = np.maximum(raw_heatmap.astype(np.float32), 0.0)
 
-    # 1. Smooth Gaussian blur on activation to eliminate angular polygon artifacts
-    heatmap_smooth = cv2.GaussianBlur(heatmap_norm, (15, 15), 0)
-    if (heatmap_smooth.shape[0], heatmap_smooth.shape[1]) != (target_h, target_w):
-        heatmap_smooth = cv2.resize(heatmap_smooth, (target_w, target_h), interpolation=cv2.INTER_CUBIC)
+    # 1. Resize low-resolution feature activation to radiograph dimensions FIRST using smooth cubic interpolation
+    if (heatmap_raw.shape[0], heatmap_raw.shape[1]) != (target_h, target_w):
+        heatmap_resized = cv2.resize(heatmap_raw, (target_w, target_h), interpolation=cv2.INTER_CUBIC)
+    else:
+        heatmap_resized = heatmap_raw.copy()
+
+    heatmap_resized = np.maximum(heatmap_resized, 0.0)
+
+    # 2. Smooth Gaussian blur at full resolution to eliminate angular pixelation
+    heatmap_smooth = cv2.GaussianBlur(heatmap_resized, (15, 15), 0)
+
+    # 3. Dynamic range normalization [0.0, 1.0] ensuring peak activations reach vibrant red/yellow thermal hotspots
+    max_val = np.max(heatmap_smooth)
+    if max_val > 0:
+        heatmap_smooth = heatmap_smooth / max_val
     heatmap_smooth = np.clip(heatmap_smooth, 0.0, 1.0)
 
     # 2. Extract Grayscale & Apply CLAHE Enhancement (Panel b)
